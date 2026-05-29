@@ -7,14 +7,16 @@ public class Order {
     private int clientId;
     private LocalDate date;
     private Calories calories;
+    private DietType dietType;
     private double discount;
     private double price;
 
-    public Order(int id, int clientId, LocalDate date, Calories calories, double discount, double price) {
+    public Order(int id, int clientId, LocalDate date, Calories calories, DietType dietType, double discount, double price) {
         this.id = id;
         this.clientId = clientId;
         this.date = date;
         this.calories = calories;
+        this.dietType = dietType;
         this.discount = discount;
         this.price = price;
     }
@@ -51,6 +53,14 @@ public class Order {
         this.calories = calories;
     }
 
+    public DietType getDietType() {
+        return dietType;
+    }
+
+    public void setDietType(DietType dietType) {
+        this.dietType = dietType;
+    }
+
     public double getDiscount() {
         return discount;
     }
@@ -69,6 +79,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Zamówienie: " + id + ": Nr klients: " + clientId + ", " + date + "; " + calories + price + "zł";
+        return "Zamówienie: " + id + ": Nr klients: " + clientId + ", " + date + "; " + calories + " " + dietType + ";" + price + "zł";
     }
 }
