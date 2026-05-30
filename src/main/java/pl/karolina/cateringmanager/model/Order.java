@@ -1,5 +1,6 @@
 package pl.karolina.cateringmanager.model;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Order {
@@ -11,6 +12,9 @@ public class Order {
     private DietType dietType;
     private double discount;
     private double price;
+
+    public Order() {
+    }
 
     public Order(int clientId, Client client, LocalDate date, Calories calories, DietType dietType, double discount, double price) {
         this.clientId = clientId;
