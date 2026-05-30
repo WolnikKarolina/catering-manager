@@ -4,6 +4,9 @@ public class Price {
     private Calories calories;
     private double price;
 
+    public Price() {
+    }
+
     public Price(Calories calories, double price) {
         this.calories = calories;
         this.price = price;
