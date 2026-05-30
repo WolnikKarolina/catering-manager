@@ -5,15 +5,27 @@ import java.time.LocalDate;
 public class Order {
     private int id;
     private int clientId;
+    private Client client;
     private LocalDate date;
     private Calories calories;
     private DietType dietType;
     private double discount;
     private double price;
 
-    public Order(int id, int clientId, LocalDate date, Calories calories, DietType dietType, double discount, double price) {
+    public Order(int clientId, Client client, LocalDate date, Calories calories, DietType dietType, double discount, double price) {
+        this.clientId = clientId;
+        this.client = client;
+        this.date = date;
+        this.calories = calories;
+        this.dietType = dietType;
+        this.discount = discount;
+        this.price = price;
+    }
+
+    public Order(int id, int clientId, Client client, LocalDate date, Calories calories, DietType dietType, double discount, double price) {
         this.id = id;
         this.clientId = clientId;
+        this.client = client;
         this.date = date;
         this.calories = calories;
         this.dietType = dietType;
@@ -35,6 +47,14 @@ public class Order {
 
     public void setClientId(int clientId) {
         this.clientId = clientId;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public LocalDate getDate() {
@@ -79,6 +99,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Zamówienie: " + id + ": Nr klients: " + clientId + ", " + date + "; " + calories + " " + dietType + ";" + price + "zł";
+        return "Zamówienie: " + id + ": Nr klienta: " + clientId + ", " + date + "; " + calories + " " + dietType + ";" + price + "zł";
     }
 }

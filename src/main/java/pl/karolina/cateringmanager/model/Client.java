@@ -1,5 +1,6 @@
 package pl.karolina.cateringmanager.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class Client {
@@ -72,8 +73,18 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Klient nr: " + id +"; " + name + "; " + address + "; " + city + "tel: " + phone + "wykluczenia: " + exclusions;
+        return "Klient nr: " + id +"; " + name + "; " + address + "; " + city + "; tel: " + phone + "wykluczenia: " + exclusions;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return id == client.id;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
