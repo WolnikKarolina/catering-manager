@@ -18,7 +18,7 @@ public class ClientRepository {
             stmt.setString(4, client.getPhone());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to save client to database", e);
         }
     }
 
@@ -28,19 +28,23 @@ public class ClientRepository {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM clients")) {
             while (rs.next()) {
-                Client client = new Client();
-                client.setId(rs.getInt("id"));
-                client.setName(rs.getString("name"));
-                client.setAddress(rs.getString("address"));
-                client.setCity(rs.getString("city"));
-                client.setPhone(rs.getString("phone"));
-                client.setExclusions(findExclusionsByClient(client.getId()));
-                clients.add(client);
+                Client client = mapClient(rs);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to fetch clients from database", e);
         }
         return clients;
+    }
+
+    private Client mapClient(ResultSet rs) throws SQLException {
+        Client client = new Client();
+        client.setId(rs.getInt("id"));
+        client.setName(rs.getString("name"));
+        client.setAddress(rs.getString("address"));
+        client.setCity(rs.getString("city"));
+        client.setPhone(rs.getString("phone"));
+        client.setExclusions(findExclusionsByClient(client.getId()));
+        return client;
     }
 
     private Set<String> findExclusionsByClient(int id) {
@@ -55,7 +59,7 @@ public class ClientRepository {
                 }
             }
         } catch ( SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to fetch exclusions for client id: " + id, e);
         }
         return exclusion;
     }
@@ -67,18 +71,11 @@ public class ClientRepository {
              stmt.setInt(1, id);
              try (ResultSet rs = stmt.executeQuery()) {
                  if (rs.next()) {
-                     Client client = new Client();
-                     client.setId(rs.getInt("id"));
-                     client.setName(rs.getString("name"));
-                     client.setAddress(rs.getString("address"));
-                     client.setCity(rs.getString("city"));
-                     client.setPhone(rs.getString("phone"));
-                     client.setExclusions(findExclusionsByClient(client.getId()));
-                     return Optional.of(client);
+                     Client client = mapClient(rs);
                  }
              }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to search clients in database", e);
         }
         return Optional.empty();
     }
@@ -94,18 +91,11 @@ public class ClientRepository {
             stmt.setString(3, pattern);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Client client = new Client();
-                    client.setId(rs.getInt("id"));
-                    client.setName(rs.getString("name"));
-                    client.setAddress(rs.getString("address"));
-                    client.setCity(rs.getString("city"));
-                    client.setPhone(rs.getString("phone"));
-                    client.setExclusions(findExclusionsByClient(client.getId()));
-                    clients.add(client);
+                    Client client = mapClient(rs);
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Wystąpił błąd podczas wyszukiwania klientów", e);
         }
         return clients;
     }
@@ -121,7 +111,7 @@ public class ClientRepository {
             stmt.setInt(5, client.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to update client with id: " + client, e);
         }
     }
 
@@ -132,7 +122,7 @@ public class ClientRepository {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to delete client with id: " + id, e);
         }
     }
 

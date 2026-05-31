@@ -26,7 +26,7 @@ public class OrderRepository {
             stmt.setDouble(6, order.getPrice());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to save order to database", e);
         }
     }
 
@@ -49,7 +49,7 @@ public class OrderRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to fetch orders for client id: " + id, e);
         }
         return orders;
     }
@@ -67,7 +67,7 @@ public class OrderRepository {
             stmt.setInt(7, order.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to update order with id: " + order.getId(), e);
         }
     }
 
@@ -78,7 +78,7 @@ public class OrderRepository {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to delete order with id: " + id, e);
         }
     }
 

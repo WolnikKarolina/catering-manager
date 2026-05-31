@@ -22,7 +22,7 @@ public class PriceRepository {
                 prices.add(price);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to fetch prices from database", e);
         }
         return prices;
     }
@@ -54,7 +54,7 @@ public class PriceRepository {
             stmt.setInt(2, price.getCalories().getKcal());
             stmt.executeUpdate();
         }catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to update price for calories: " + price.getCalories().getKcal(), e);
         }
     }
 
