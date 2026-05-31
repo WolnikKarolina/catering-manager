@@ -14,6 +14,14 @@ public class Client {
     public Client() {
     }
 
+    public Client(String name, String address, String city, String phone, Set<String> exclusions) {
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.phone = phone;
+        this.exclusions = exclusions;
+    }
+
     public Client(int id, String name, String address, String city, String phone) {
         this.id = id;
         this.name = name;
