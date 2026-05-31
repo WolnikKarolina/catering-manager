@@ -23,6 +23,23 @@ public class DataReader {
         return text;
     }
 
+    public int readPositiveNumber(String prompt) {
+        printer.print(prompt);
+        int choice;
+        do {
+            try {
+                choice = Integer.parseInt(sc.nextLine().trim());
+                if (choice <= 0) {
+                    printer.print("Podaj liczbę dodatnią");
+                }
+            } catch (NumberFormatException e) {
+                printer.print("Podaj poprawną liczbę");
+                choice = 0;
+            }
+        } while (choice <= 0);
+        return choice;
+    }
+
 
 
 
