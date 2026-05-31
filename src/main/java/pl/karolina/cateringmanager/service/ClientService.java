@@ -4,6 +4,7 @@ import pl.karolina.cateringmanager.model.Client;
 import pl.karolina.cateringmanager.repository.ClientRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ClientService {
     private final ClientRepository cr;
@@ -22,6 +23,10 @@ public class ClientService {
 
     public List<Client> getAllClients(){
         return cr.findAll();
+    }
+
+    public Optional<Client> findById(int id) {
+        return cr.findById(id);
     }
 
     public List<Client> searchClients(String query) {
