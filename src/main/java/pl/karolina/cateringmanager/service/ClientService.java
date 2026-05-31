@@ -33,6 +33,10 @@ public class ClientService {
         return cr.search(query);
     }
 
+    public void addExclusion(int id, String ingredient) {
+        cr.addExclusion(id, ingredient);
+    }
+
     public void updateClient(Client client) {
         cr.update(client);
     }
