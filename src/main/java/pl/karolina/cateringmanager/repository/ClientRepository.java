@@ -77,6 +77,18 @@ public class ClientRepository {
         }
     }
 
+    public void deleteExclusion (int id, String ingredient) {
+        try (Connection conn = DatabaseConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(
+                "DELETE FROM exclusions WHERE client_id = ? AND ingredient = ?")) {
+            stmt.setInt(1, id);
+            stmt.setString(2, ingredient);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+             throw new RuntimeException("Failed to delete exclusions for client id: " + id, e);
+        }
+    }
+
     public Optional<Client> findById(int id) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(

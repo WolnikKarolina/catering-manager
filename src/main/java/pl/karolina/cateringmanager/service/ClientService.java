@@ -37,6 +37,10 @@ public class ClientService {
         cr.addExclusion(id, ingredient);
     }
 
+    public void deleteExclusion(int id, String ingredient) {
+        cr.deleteExclusion(id, ingredient);
+    }
+
     public void updateClient(Client client) {
         cr.update(client);
     }
