@@ -64,6 +64,19 @@ public class ClientRepository {
         return exclusion;
     }
 
+    public void addExclusion(int id, String ingredient) {
+        Set<String> exclusion = new HashSet<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "INSERT INTO exclusions (client_id, ingredient) Values (?, ?)")) {
+            stmt.setInt(1, id);
+            stmt.setString(2, ingredient);
+            stmt.executeUpdate();
+        } catch ( SQLException e) {
+            throw new RuntimeException("Failed to fetch exclusions for client id: " + id, e);
+        }
+    }
+
     public Optional<Client> findById(int id) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
