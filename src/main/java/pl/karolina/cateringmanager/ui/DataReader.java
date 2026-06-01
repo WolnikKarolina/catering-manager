@@ -1,11 +1,14 @@
 package pl.karolina.cateringmanager.ui;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class DataReader {
 
     private final Printer printer;
     private final Scanner sc = new Scanner(System.in);
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public DataReader(Printer printer) {
         this.printer = printer;
@@ -38,6 +41,14 @@ public class DataReader {
             }
         } while (choice <= 0);
         return choice;
+    }
+
+    public LocalDate readDate(String prompt) {
+        printer.print(prompt);
+        printer.print("Podaj date w formacie dd-mm-yyyy");
+        String input = sc.nextLine();
+        LocalDate localDate = LocalDate.parse(input, dateFormat);
+        return localDate;
     }
 
 
