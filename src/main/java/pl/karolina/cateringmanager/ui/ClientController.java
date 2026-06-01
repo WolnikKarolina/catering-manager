@@ -67,13 +67,21 @@ public class ClientController {
         }
     }
 
-    public void findClient() {
-        printer.printAll(searchWithRetry());
+    public Optional<Client> findClientById(int id) {
+        Optional<Client> client = cs.findById(id);
+        if (client.isEmpty()) {
+            printer.print("Brak klienta o podanym id");
+        }
+        return client;
     }
 
-    private List<Client> searchWithRetry() {
+    public void getClient() {
+        printer.printAll(searchClientWithRetry());
+    }
+
+    private List<Client> searchClientWithRetry() {
         while (true) {
-            String query = reader.readText("Wpisz dane do wyszukania");
+            String query = reader.readText("Wpisz dane klienta do wyszukania");
             List<Client> clients = cs.searchClients(query);
             if (clients.isEmpty()) {
                 printer.print("Brak danych w bazie");
@@ -90,7 +98,7 @@ public class ClientController {
     }
 
     public void updateClientData () {
-        List<Client> clients = searchWithRetry();
+        List<Client> clients = searchClientWithRetry();
         int id = reader.readPositiveNumber("Wpisz id klienta którego chcesz edytować");
         Optional<Client> client = cs.findById(id);
         printDataToChange();
@@ -134,7 +142,7 @@ public class ClientController {
     }
 
     public void deleteClient () {
-        List<Client> clients = searchWithRetry();
+        List<Client> clients = searchClientWithRetry();
         printer.printAll(clients);
         int id = reader.readPositiveNumber("Wpisz id clienta którego chcesz usunąć");
         if (cs.findById(id).isEmpty()) {
