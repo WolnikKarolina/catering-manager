@@ -7,6 +7,7 @@ import pl.karolina.cateringmanager.service.PriceService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -39,48 +40,126 @@ public class OrderController {
             if (client.isEmpty()) {
                 return;
             }
-            int id = client.get().getId();
-            Calories calories = readCalories();
-            DietType dietType = readDietType();
-            Double discount = readDiscount();
-            Price price = readPrice(calories);
-            if (price == null) {
-                return;
-            }
-            int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zmównie w dni robocze \n 3 - zamównie z sobotami \n 4 - zamównie razem z weekedami \n 5 - Wróć do poprzedniego menu");
-            switch (choice) {
-                case 1 -> {
-                    List<LocalDate> dates = orderPerDay();
-                    addDates(dates, id, client, calories, dietType, discount, price);
-                }
-                case 2 -> {
-                    List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
-                    addDates(dates, id, client, calories, dietType, discount, price);
-                }
-                case 3 -> {
-                    List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
-                    addDates(dates, id, client, calories, dietType, discount, price);
-                }
-                case 4 -> {
-                    List<LocalDate> dates = ordersFromRange(day -> true);
-                    addDates(dates, id, client, calories, dietType, discount, price);
-                }
-                case 5 -> {
-                    return;
-                }
-                default -> printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
-            }
-            String again = reader.readText("Czy chesz złożyc kolejne zamówienie? t/n");
+            OrderData orderData = getOrderData();
+            if (orderData == null) return;
+            if (processOrderChoice(client.get(), orderData)) return;
+            String again = reader.readText("Czy chcesz złożyć kolejne zamówienie? t/n");
             if (again.equals("n")) {
                 return;
             }
         }
     }
 
+    private boolean processOrderChoice(Client client, OrderData orderData) {
+        int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zamównie na dni robocze \n 3 - zamówienie z sobotami \n 4 - zamówienie razem z weekedami \n 5 - Wróć do poprzedniego menu");
+        List<LocalDate> dates = switch(choice) {
+
+            case 1 -> orderPerDay();
+            case 2 -> ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
+            case 3 -> ordersFromRange(day -> day != DayOfWeek.SUNDAY);
+            case 4 -> ordersFromRange(day -> true);
+            case 5 -> null;
+            default -> {
+                printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
+                yield null;
+            }
+        };
+        if (dates != null) {
+            addDates(dates, client, orderData);
+        }
+        return choice == 5;
+    }
+
+    private OrderData getOrderData() {
+        Calories calories = readCalories();
+        DietType dietType = readDietType();
+        Double discount = readDiscount();
+        Price price = readPrice(calories);
+        if (price == null) {
+            return null;
+        }
+        OrderData orderData = new OrderData(calories, dietType, discount, price);
+        return orderData;
+    }
+
+    private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
+    }
+
+    public void printOrders () {
+        Optional<Client> client = takeClient();
+        if (client.isEmpty()) {
+            printer.print("Klient nie istnieje");
+            return;
+        }
+        List<Order> orders = os.findOrderByClientId(client.get().getId());
+        if (orders.isEmpty()) {
+            printer.print("Brak zamówień dla danego klienta");
+            return;
+        } else {
+            orders.forEach(System.out::println);
+        }
+    }
+    
+    public void editOrders() {
+        Optional<Client> client = takeClient();
+        if (client.isEmpty()) {
+            printer.print("Klient nie istnieje");
+            return;
+        }
+
+        LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
+        LocalDate finishDate = reader.readDate("Podaj datę końcową");
+        List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
+        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
+        for (Order order : ordersByDate) {
+        applyEdit(order, choice);
+        }
+
+    }
+
+    private void applyEdit (Order order, int choice) {
+        switch (choice) {
+            case 1 -> order.setCalories(readCalories());
+            case 2 -> order.setDietType(readDietType());
+            case 3 -> order.setDiscount(readDiscount());
+            default -> throw new IllegalArgumentException("Unexpected value: " + choice);
+        }
+        os.updateOrder(order);
+        printer.print("Zamówienie zmienione");
+    }
+
+    public void editOrder() {
+        printOrders();
+        int orderId = reader.readPositiveNumber("Wpisz nr zamówienie które chcesz edytować");
+        Order order = os.findOrderById(orderId);
+        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
+       applyEdit(order, choice);
+    }
+
+    public void deleteOrder() {
+        Optional<Client> client = takeClient();
+        if (client.isEmpty()) {
+            printer.print("Klient nie istnieje");
+            return;
+        }
+        LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
+        LocalDate finishDate = reader.readDate("Podaj datę końcową");
+        List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
+        if (ordersByDate.isEmpty()) {
+            printer.print("Brak zamówień w podanym przedizale");
+            return;
+        }
+        for (Order order : ordersByDate) {
+            os.deleteOrder(order.getId());
+        }
+        printer.print("Usunięto zamówienia w okresie: " + startDate + " - " + finishDate);
+    }
+
+
     private Optional<Client> takeClient() {
-        clctr.getClient();
+        clctr.printClient();
         while (true) {
-            int id = reader.readPositiveNumber("Wprowadz id klienta dla którego chcesz złożyć zamówienie");
+            int id = reader.readPositiveNumber("Wprowadz id klienta");
             Optional<Client> client = clctr.findClientById(id);
             if (client.isPresent()) {
                 return client;
@@ -88,12 +167,9 @@ public class OrderController {
             String choice = reader.readText("Chcesz spróbować ponownie? t/n");
             if (choice.equals("n")) {
                 return Optional.empty();
-            } else if (choice.equals("t")) {
-                continue;
-            } else {
-                printer.print("Wybrano złą literę");
-                continue;
             }
+            if (!choice.equalsIgnoreCase("t"))
+                printer.print("Wybrano złą literę");
         }
     }
 
@@ -171,20 +247,20 @@ public class OrderController {
         }
     }
 
-    private void addDates(List<LocalDate> dates, int id, Optional<Client> client, Calories calories, DietType dietType, Double discount, Price price) {
+    private void addDates(List<LocalDate> dates, Client client,OrderData orderData) {
         if (dates.isEmpty()) {
             printer.print("Nie dodano zamówień");
             return;
         }
         for (LocalDate d : dates) {
-            Order order = new Order(id, client.get(), d, calories, dietType, discount, price.getPrice());
+            Order order = new Order(client.getId(), client, d, orderData.calories, orderData.dietType, orderData.discount, orderData.price.getPrice());
             os.addOrder(order);
         }
         printer.print("Dodano " + dates.size() + " zamówień");
     }
 
     private List<LocalDate> orderPerDay() {
-        List<LocalDate> dates = new ArrayList<>();
+        List<LocalDate> dates = new LinkedList<>();
         while (true) {
             LocalDate date = reader.readDate("Podaj datę");
             dates.add(date);
