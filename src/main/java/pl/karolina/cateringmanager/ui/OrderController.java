@@ -31,7 +31,6 @@ public class OrderController {
     public void addOrder() {
         printer.print("Dodawanie nowego zamówienia");
         createOrders();
-
     }
 
     private void createOrders() {
@@ -48,28 +47,34 @@ public class OrderController {
             if (price == null) {
                 return;
             }
-            int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zmównie w dni robocze \n 3 - zamównie z sobotami \n 4 - zamównie razem z weekedami");
+            int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zmównie w dni robocze \n 3 - zamównie z sobotami \n 4 - zamównie razem z weekedami \n 5 - Wróć do poprzedniego menu");
             switch (choice) {
-                case 1 -> {List<LocalDate> dates = orderPerDay();
+                case 1 -> {
+                    List<LocalDate> dates = orderPerDay();
                     addDates(dates, id, client, calories, dietType, discount, price);
                 }
-                case 2 -> {List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
-                    addDates(dates, id, client, calories, dietType, discount, price);
-                    }
-                case 3 -> {List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
+                case 2 -> {
+                    List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
                     addDates(dates, id, client, calories, dietType, discount, price);
                 }
-                case 4 -> {List<LocalDate> dates = ordersFromRange(day -> true);
+                case 3 -> {
+                    List<LocalDate> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
                     addDates(dates, id, client, calories, dietType, discount, price);
                 }
-
+                case 4 -> {
+                    List<LocalDate> dates = ordersFromRange(day -> true);
+                    addDates(dates, id, client, calories, dietType, discount, price);
+                }
+                case 5 -> {
+                    return;
+                }
+                default -> printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
             }
             String again = reader.readText("Czy chesz złożyc kolejne zamówienie? t/n");
-            if ( again.equals("n")) {
+            if (again.equals("n")) {
                 return;
             }
         }
-
     }
 
     private Optional<Client> takeClient() {
@@ -83,8 +88,11 @@ public class OrderController {
             String choice = reader.readText("Chcesz spróbować ponownie? t/n");
             if (choice.equals("n")) {
                 return Optional.empty();
-            } else if (!choice.equals("t")) {
+            } else if (choice.equals("t")) {
+                continue;
+            } else {
                 printer.print("Wybrano złą literę");
+                continue;
             }
         }
     }
@@ -100,7 +108,7 @@ public class OrderController {
 
     private Calories readCalories() {
         while (true) {
-            int kcal = reader.readPositiveNumber("Wpisz koloryczność");
+            int kcal = reader.readPositiveNumber("Wpisz kaloryczność");
             try {
                 return Calories.fromKcal(kcal);
             } catch (IllegalArgumentException e) {
@@ -141,8 +149,7 @@ public class OrderController {
         }
     }
 
-
-    public List<LocalDate> ordersFromRange( Predicate<DayOfWeek> filter) {
+    public List<LocalDate> ordersFromRange(Predicate<DayOfWeek> filter) {
         while (true) {
             List<LocalDate> dates = new ArrayList<>();
             LocalDate startDate = reader.readDate("Podaj date początkową");
@@ -159,17 +166,21 @@ public class OrderController {
                 String choice = reader.readText(" Chcesz spróbować ponownie? t/n");
                 if (choice.equals("t")) {
                     continue;
-                }else return new ArrayList<>();
+                } else return new ArrayList<>();
             }
         }
     }
 
-    private void addDates( List<LocalDate> dates, int id, Optional<Client> client, Calories calories, DietType dietType, Double discount, Price price) {
+    private void addDates(List<LocalDate> dates, int id, Optional<Client> client, Calories calories, DietType dietType, Double discount, Price price) {
+        if (dates.isEmpty()) {
+            printer.print("Nie dodano zamówień");
+            return;
+        }
         for (LocalDate d : dates) {
             Order order = new Order(id, client.get(), d, calories, dietType, discount, price.getPrice());
             os.addOrder(order);
         }
-
+        printer.print("Dodano " + dates.size() + " zamówień");
     }
 
     private List<LocalDate> orderPerDay() {
@@ -189,9 +200,8 @@ public class OrderController {
 
     private boolean printDatesToAccept(List<LocalDate> dates) {
         printer.print(dates);
-        String accept = reader.readText("Czy zamównie się zgadza? t/n");
+        String accept = reader.readText("Czy zamówienie się zgadza? t/n");
         return accept.equals("t");
     }
-
 
 }
