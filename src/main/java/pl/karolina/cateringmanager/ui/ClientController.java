@@ -75,7 +75,7 @@ public class ClientController {
         return client;
     }
 
-    public void getClient() {
+    public void printClient() {
         printer.printAll(searchClientWithRetry());
     }
 
