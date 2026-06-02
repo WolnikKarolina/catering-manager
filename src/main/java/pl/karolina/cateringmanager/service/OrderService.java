@@ -22,13 +22,21 @@ public class OrderService {
         or.save(order);
     }
 
+    public Order findOrderById(int orderId) {
+        return or.findOrderById(orderId);
+    }
+
+    public List<Order> findOrdersByDate (int clientId, LocalDate startDate, LocalDate finishDate) {
+        return or.findOrdersByClientIdByDates(clientId, startDate, finishDate);
+    }
+
     private void applyPrice(Order order) {
         pr.findByCalories(order.getCalories().getKcal())
                 .ifPresent(price -> order.setPrice(price.getPrice()));
     }
 
     public List<Order> findOrderByClientId (int id) {
-        return or.findByClientId(id);
+        return or.findOrdersByClientId(id);
     }
 
     public void updateOrder(Order order) {
@@ -37,11 +45,11 @@ public class OrderService {
     }
 
     public void deleteOrder(int id) {
-        or.delete(id);
+        or.deleteOneOrder(id);
     }
 
     public boolean orderExistForDate(int clientId, LocalDate date) {
-        return or.findByClientId(clientId).stream().anyMatch(o -> o.getDate().equals(date));
+        return or.findOrdersByClientId(clientId).stream().anyMatch(o -> o.getDate().equals(date));
     }
 
 }
