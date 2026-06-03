@@ -69,11 +69,11 @@ public class OrderController {
         Calories calories = readCalories();
         DietType dietType = readDietType();
         Double discount = readDiscount();
-        Price price = readPrice(calories);
-        if (price == null) {
+        Optional<Price> price = readPrice(calories);
+        if (price.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new OrderData(calories, dietType, discount, price));
+        return Optional.of(new OrderData(calories, dietType, discount, price.get()));
     }
 
     private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
@@ -109,6 +109,10 @@ public class OrderController {
         if (finishDate.isBefore(startDate)) {
             printer.print("Data końcowa jest przed datą początkową, spróbuj ponownie");
             return;
+        }
+        if (startDate.getYear() != today.getYear() && finishDate.getYear() != today.getYear()) {
+            String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuowac t/n");
+            if (choice.equalsIgnoreCase("n")) return;
         }
         List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
         int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
@@ -174,13 +178,12 @@ public class OrderController {
         }
     }
 
-    private Price readPrice(Calories calories) {
-        try {
-            return ps.findByCalories(calories.getKcal()).orElseThrow(() -> new RuntimeException("Brak ceny"));
-        } catch (RuntimeException e) {
+    private Optional<Price> readPrice(Calories calories) {
+        Optional<Price> price = ps.findByCalories(calories.getKcal());
+        if (price.isEmpty()) {
             printer.print("Brak ceny, popraw dane w systemie i spróbuj ponownie");
-            return null;
         }
+        return price;
     }
 
     private Calories readCalories() {
