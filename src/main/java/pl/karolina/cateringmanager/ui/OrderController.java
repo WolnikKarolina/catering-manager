@@ -195,6 +195,7 @@ public class OrderController {
                 return Calories.fromKcal(kcal);
             } catch (IllegalArgumentException e) {
                 printer.print("Niepoprawna kaloryczność, spróbuj ponownie");
+                printer.print(Calories.getAll());
             }
         }
     }

@@ -1,5 +1,7 @@
 package pl.karolina.cateringmanager.model;
 
+import java.util.List;
+
 public enum Calories {
     KCAL_1200(1200),
     KCAL_1500(1500),
@@ -27,5 +29,13 @@ public enum Calories {
             }
         }
         throw new IllegalArgumentException("Niepoprawna wartość kcal: " + kcal);
+    }
+    @Override
+    public String toString() {
+        return String.valueOf(kcal);
+    }
+
+    public static List<Calories> getAll() {
+        return List.of(values());
     }
 }
