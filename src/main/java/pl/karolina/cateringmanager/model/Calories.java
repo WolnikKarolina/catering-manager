@@ -9,8 +9,7 @@ public enum Calories {
     KCAL_2000(2000),
     KCAL_2500(2500),
     KCAL_3000(3000),
-    KCAL_3500(3500),
-    ;
+    KCAL_3500(3500);
 
     private final int kcal;
 
@@ -30,6 +29,7 @@ public enum Calories {
         }
         throw new IllegalArgumentException("Niepoprawna wartość kcal: " + kcal);
     }
+
     @Override
     public String toString() {
         return String.valueOf(kcal);
