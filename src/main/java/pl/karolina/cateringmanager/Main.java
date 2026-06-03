@@ -17,7 +17,7 @@ public class Main {
         OrderRepository or = new OrderRepository();
         Order order = new Order(1, kowalski, LocalDate.now(), Calories.KCAL_1200, DietType.STANDARD, 0.0, 53);
         or.save(order);
-        List<Order> orderByClientId = or.findByClientId(1);
+        List<Order> orderByClientId = or.findOrdersByClientId(1);
         orderByClientId.forEach(System.out::println);
 
         PriceRepository pr = new PriceRepository();
