@@ -56,18 +56,14 @@ public class OrderController {
     private void processOrderChoice(Client client, OrderData orderData) {
         int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zamównie na dni robocze \n 3 - zamówienie z sobotami \n 4 - zamówienie razem z weekedami \n 5 - Wróć do poprzedniego menu");
         switch (choice) {
-
             case 1 -> addDates(orderPerDay(), client, orderData);
-            case 2 ->
-                    addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
+            case 2 -> addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
             case 3 -> addDates(ordersFromRange(day -> day != DayOfWeek.SUNDAY), client, orderData);
             case 4 -> addDates(ordersFromRange(day -> true), client, orderData);
             case 5 -> {return;}
             default -> printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
         }
     }
-
-
 
     private Optional<OrderData> getOrderData() {
         Calories calories = readCalories();
@@ -94,7 +90,7 @@ public class OrderController {
             printer.print("Brak zamówień dla danego klienta");
             return;
         } else {
-            orders.forEach(System.out::println);
+            orders.forEach(printer::print);
         }
     }
     
@@ -104,7 +100,6 @@ public class OrderController {
             printer.print("Klient nie istnieje");
             return;
         }
-
         LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         if (startDate.isBefore(today)) {
@@ -120,7 +115,6 @@ public class OrderController {
         for (Order order : ordersByDate) {
         applyEdit(order, choice);
         }
-
     }
 
     private void applyEdit (Order order, int choice) {
@@ -134,12 +128,12 @@ public class OrderController {
         printer.print("Zamówienie zmienione");
     }
 
-    public void editOrder() {
+    public void editSingleOrder() {
         printOrders();
-        int orderId = reader.readPositiveNumber("Wpisz nr zamówienie które chcesz edytować");
+        int orderId = reader.readPositiveNumber("Wpisz nr zamówienia które chcesz edytować");
         Order order = os.findOrderById(orderId);
         int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
-       applyEdit(order, choice);
+        applyEdit(order, choice);
     }
 
     public void deleteOrder() {
@@ -152,7 +146,7 @@ public class OrderController {
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
         if (ordersByDate.isEmpty()) {
-            printer.print("Brak zamówień w podanym przedizale");
+            printer.print("Brak zamówień w podanym przedziale");
             return;
         }
         for (Order order : ordersByDate) {
@@ -165,17 +159,18 @@ public class OrderController {
     private Optional<Client> takeClient() {
         clientctrl.printClient();
         while (true) {
-            int id = reader.readPositiveNumber("Wprowadz id klienta");
+            int id = reader.readPositiveNumber("Wprowadź id klienta");
             Optional<Client> client = clientctrl.findClientById(id);
             if (client.isPresent()) {
                 return client;
             }
             String choice = reader.readText("Chcesz spróbować ponownie? t/n");
-            if (choice.equals("n")) {
+            if (choice.equalsIgnoreCase("n")) {
                 return Optional.empty();
             }
-            if (!choice.equalsIgnoreCase("t"))
+            if (!choice.equalsIgnoreCase("t")) {
                 printer.print("Wybrano złą literę");
+            }
         }
     }
 
@@ -195,7 +190,7 @@ public class OrderController {
                 return Calories.fromKcal(kcal);
             } catch (IllegalArgumentException e) {
                 printer.print("Niepoprawna kaloryczność, spróbuj ponownie");
-                printer.print(Calories.getAll());
+                printer.printAll(Calories.getAll());
             }
         }
     }
@@ -282,7 +277,7 @@ public class OrderController {
     }
 
     private boolean printDatesToAccept(List<LocalDate> dates) {
-        printer.print(dates);
+        printer.printAll(dates);
         String accept = reader.readText("Czy zamówienie się zgadza? t/n");
         return accept.equals("t");
     }
