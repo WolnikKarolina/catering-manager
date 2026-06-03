@@ -46,8 +46,8 @@ public class OrderController {
                 return;
             }
             processOrderChoice(client.get(), orderData.get());
-            String again = reader.readText("Czy chcesz złożyć kolejne zamówienie? t/n");
-            if (again.equals("n")) {
+            String again = reader.readText("Czy chcesz złożyć kolejne zamówienie? t/n").trim();
+            if (again.equalsIgnoreCase("n")) {
                 return;
             }
         }
@@ -103,7 +103,7 @@ public class OrderController {
         LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         if (startDate.isBefore(today)) {
-            String choice = reader.readText("Edytujesz zrealizowane zamówienie, czy chcesz kontynuować? t/n");
+            String choice = reader.readText("Edytujesz zrealizowane zamówienie, czy chcesz kontynuować? t/n").trim();
             if (choice.equalsIgnoreCase("n")) return;
         }
         if (finishDate.isBefore(startDate)) {
@@ -111,7 +111,7 @@ public class OrderController {
             return;
         }
         if (startDate.getYear() != today.getYear() && finishDate.getYear() != today.getYear()) {
-            String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuowac t/n");
+            String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuowac t/n").trim();
             if (choice.equalsIgnoreCase("n")) return;
         }
         List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
@@ -168,7 +168,7 @@ public class OrderController {
             if (client.isPresent()) {
                 return client;
             }
-            String choice = reader.readText("Chcesz spróbować ponownie? t/n");
+            String choice = reader.readText("Chcesz spróbować ponownie? t/n").trim();
             if (choice.equalsIgnoreCase("n")) {
                 return Optional.empty();
             }
@@ -200,7 +200,7 @@ public class OrderController {
 
     private Double readDiscount() {
         while (true) {
-            String disc = reader.readText("Ile procent rabatu ma otrzymać klient?");
+            String disc = reader.readText("Ile procent rabatu ma otrzymać klient?").trim();
             try {
                 double discount = Double.parseDouble(disc);
                 if (discount < 0 || discount > 100) {
@@ -244,8 +244,8 @@ public class OrderController {
             if (printDatesToAccept(dates)) {
                 return dates;
             } else {
-                String choice = reader.readText(" Chcesz spróbować ponownie? t/n");
-                if (choice.equals("t")) {
+                String choice = reader.readText(" Chcesz spróbować ponownie? t/n").trim();
+                if (choice.equalsIgnoreCase("t")) {
                     continue;
                 } else return new ArrayList<>();
             }
@@ -269,8 +269,8 @@ public class OrderController {
         while (true) {
             LocalDate date = reader.readDate("Podaj datę");
             dates.add(date);
-            String choice = reader.readText("Czy dodać kolejny dzień? t/n");
-            if (choice.equals("n")) {
+            String choice = reader.readText("Czy dodać kolejny dzień? t/n").trim();
+            if (choice.equalsIgnoreCase("n")) {
                 if (printDatesToAccept(dates)) {
                     return dates;
                 }
@@ -281,8 +281,8 @@ public class OrderController {
 
     private boolean printDatesToAccept(List<LocalDate> dates) {
         printer.printAll(dates);
-        String accept = reader.readText("Czy zamówienie się zgadza? t/n");
-        return accept.equals("t");
+        String accept = reader.readText("Czy zamówienie się zgadza? t/n").trim();
+        return accept.equalsIgnoreCase("t");
     }
 
 }
