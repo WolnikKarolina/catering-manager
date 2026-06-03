@@ -17,20 +17,21 @@ public class OrderController {
     private final OrderService os;
     private final Printer printer;
     private final DataReader reader;
-    private final ClientController clctr;
+    private final ClientController clientctrl;
     private final PriceService ps;
+    private final LocalDate today = LocalDate.now();
 
 
-    public OrderController(OrderService os, Printer printer, DataReader reader, ClientController clctr, PriceService ps) {
+    public OrderController(OrderService os, Printer printer, DataReader reader, ClientController clientctrl, PriceService ps) {
         this.os = os;
         this.printer = printer;
         this.reader = reader;
-        this.clctr = clctr;
+        this.clientctrl = clientctrl;
         this.ps = ps;
     }
 
     public void addOrder() {
-        printer.print("Dodawanie nowego zamówienia");
+        printer.print("--- Dodawanie nowego zamówienia ---");
         createOrders();
     }
 
@@ -40,9 +41,11 @@ public class OrderController {
             if (client.isEmpty()) {
                 return;
             }
-            OrderData orderData = getOrderData();
-            if (orderData == null) return;
-            if (processOrderChoice(client.get(), orderData)) return;
+            Optional <OrderData> orderData = getOrderData();
+            if (orderData.isEmpty()) {
+                return;
+            }
+            processOrderChoice(client.get(), orderData.get());
             String again = reader.readText("Czy chcesz złożyć kolejne zamówienie? t/n");
             if (again.equals("n")) {
                 return;
@@ -50,36 +53,31 @@ public class OrderController {
         }
     }
 
-    private boolean processOrderChoice(Client client, OrderData orderData) {
+    private void processOrderChoice(Client client, OrderData orderData) {
         int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zamównie na dni robocze \n 3 - zamówienie z sobotami \n 4 - zamówienie razem z weekedami \n 5 - Wróć do poprzedniego menu");
-        List<LocalDate> dates = switch(choice) {
+        switch (choice) {
 
-            case 1 -> orderPerDay();
-            case 2 -> ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
-            case 3 -> ordersFromRange(day -> day != DayOfWeek.SUNDAY);
-            case 4 -> ordersFromRange(day -> true);
-            case 5 -> null;
-            default -> {
-                printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
-                yield null;
-            }
-        };
-        if (dates != null) {
-            addDates(dates, client, orderData);
+            case 1 -> addDates(orderPerDay(), client, orderData);
+            case 2 ->
+                    addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
+            case 3 -> addDates(ordersFromRange(day -> day != DayOfWeek.SUNDAY), client, orderData);
+            case 4 -> addDates(ordersFromRange(day -> true), client, orderData);
+            case 5 -> {return;}
+            default -> printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
         }
-        return choice == 5;
     }
 
-    private OrderData getOrderData() {
+
+
+    private Optional<OrderData> getOrderData() {
         Calories calories = readCalories();
         DietType dietType = readDietType();
         Double discount = readDiscount();
         Price price = readPrice(calories);
         if (price == null) {
-            return null;
+            return Optional.empty();
         }
-        OrderData orderData = new OrderData(calories, dietType, discount, price);
-        return orderData;
+        return Optional.of(new OrderData(calories, dietType, discount, price));
     }
 
     private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
@@ -109,6 +107,14 @@ public class OrderController {
 
         LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
+        if (startDate.isBefore(today)) {
+            String choice = reader.readText("Edytujesz zrealizowane zamówienie, czy chcesz kontynuować? t/n");
+            if (choice.equalsIgnoreCase("n")) return;
+        }
+        if (finishDate.isBefore(startDate)) {
+            printer.print("Data końcowa jest przed datą początkową, spróbuj ponownie");
+            return;
+        }
         List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
         int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
         for (Order order : ordersByDate) {
@@ -157,10 +163,10 @@ public class OrderController {
 
 
     private Optional<Client> takeClient() {
-        clctr.printClient();
+        clientctrl.printClient();
         while (true) {
             int id = reader.readPositiveNumber("Wprowadz id klienta");
-            Optional<Client> client = clctr.findClientById(id);
+            Optional<Client> client = clientctrl.findClientById(id);
             if (client.isPresent()) {
                 return client;
             }
