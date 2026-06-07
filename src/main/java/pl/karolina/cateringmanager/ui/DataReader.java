@@ -50,6 +50,10 @@ public class DataReader {
         return LocalDate.parse(input, dateFormat);
     }
 
+    public void close() {
+        sc.close();
+    }
+
 
 
 

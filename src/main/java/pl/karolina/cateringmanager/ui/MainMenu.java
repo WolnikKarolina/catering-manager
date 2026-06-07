@@ -38,6 +38,7 @@ public class MainMenu {
                 case 5 -> paymentsMenu();
                 case 6 -> {
                     printer.print("Wyjście z programu");
+                    reader.close();
                     return;
                 }
                 default -> printer.print("Wybrałes niepoprawną opcję");
