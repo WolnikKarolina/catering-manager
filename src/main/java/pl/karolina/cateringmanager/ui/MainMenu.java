@@ -7,7 +7,6 @@ import pl.karolina.cateringmanager.service.ClientService;
 import pl.karolina.cateringmanager.service.OrderService;
 import pl.karolina.cateringmanager.service.PriceService;
 
-import static java.lang.System.exit;
 
 public class MainMenu {
     private final DataReader reader;
@@ -37,15 +36,40 @@ public class MainMenu {
                 case 3 -> priceMenu();
                 case 4 -> dailyMenu();
                 case 5 -> paymentsMenu();
-                case 6 -> exit();
+                case 6 -> {
+                    printer.print("Wyjście z programu");
+                    return;
+                }
                 default -> printer.print("Wybrałes niepoprawną opcję");
             }
         }
     }
 
+    private void paymentsMenu() {
+    }
+
+    private void dailyMenu() {
+        
+    }
+
+    private void priceMenu() {
+        while (true) {
+            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Wyświetl cennik \n 2 - Zmień ceny \n 3 - Powrót do poprzedniego menu"  );
+            switch (choice) {
+                case 1 -> {}
+                case 2 -> {}
+                case 3 -> {
+                    return;
+                }
+                default -> printer.print("Niepoprawna opcja, spróbuj ponownie");
+            }
+
+        }
+    }
+
     private void ordersMenu() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Dodaj nowe zamówienie \n 2 - Wyświetl zamówienia klienta \n 3 - Edytuj zamówienie \n 4 - Usuń zamównie \n 5 - Wyjście do poprzedniego menu");
+            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Dodaj nowe zamówienie \n 2 - Wyświetl zamówienia klienta \n 3 - Edytuj zamówienie \n 4 - Usuń zamówienie \n 5 - Wyjście do poprzedniego menu");
             switch (choice) {
                 case 1 -> orderctrl.addOrder();
                 case 2 -> printOrders();
@@ -68,6 +92,7 @@ public class MainMenu {
             case 3 -> {
                 return;
             }
+            default -> printer.print("Niepoprawna opcja, spróbuj ponownie");
         }
     }
 
@@ -82,16 +107,20 @@ public class MainMenu {
                 case 5 -> {
                     return;
                 }
+                default -> printer.print("Niepoprawna opcja spróbuj ponownie");
             }
         }
     }
 
     private void findOrDeleteClient() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Edytuj dane \n 2 - Usuń klienta");
+            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Edytuj dane \n 2 - Usuń klienta \n 3 - Powrót do poprzedniego menu");
             switch (choice) {
                 case 1 -> clientctrl.updateClientData();
                 case 2 -> clientctrl.deleteClient();
+                case 3 -> {
+                    return;
+                }
                 default -> printer.print("Niepoprawny wybór, spróbuj ponownie");
             }
         }
