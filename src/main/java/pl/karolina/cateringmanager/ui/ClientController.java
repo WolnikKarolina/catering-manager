@@ -97,23 +97,50 @@ public class ClientController {
         }
     }
 
-    public void updateClientData () {
+    public void updateClientData() {
         List<Client> clients = searchClientWithRetry();
+        printer.printAll(clients);
         int id = reader.readPositiveNumber("Wpisz id klienta którego chcesz edytować");
         Optional<Client> client = cs.findById(id);
+        if (client.isEmpty()) {
+            printer.print("Klient nie istnieje");
+            return;
+        }
+        Client c = client.get();
         printDataToChange();
-        int toChange = reader.readPositiveNumber("Które dane chcesz zmienić");
-        client.ifPresent(c -> {
+        while (true) {
+            int toChange = reader.readPositiveNumber("Które dane chcesz zmienić");
             switch (toChange) {
-                case 1 -> c.setName(reader.readText("Podaj nowe Imię i Nazwisko").trim());
-                case 2 -> c.setAddress(reader.readText("Podaj nowy adres").trim());
-                case 3 -> c.setCity(reader.readText("Podaj nową miejscowość").trim());
-                case 4 -> c.setPhone(reader.readText("Podaj nowy nr telefonu").trim());
-                case 5 -> changeExclusion(c);
+                case 1 -> {
+                    c.setName(reader.readText("Podaj nowe Imię i Nazwisko").trim());
+                    cs.updateClient(c);
+                }
+                case 2 -> {
+                    c.setAddress(reader.readText("Podaj nowy adres").trim());
+                    cs.updateClient(c);
+                }
+                case 3 -> {
+                    c.setCity(reader.readText("Podaj nową miejscowość").trim());
+                    cs.updateClient(c);
+                }
+                case 4 -> {
+                    c.setPhone(reader.readText("Podaj nowy nr telefonu").trim());
+                    cs.updateClient(c);
+                }
+                case 5 -> {
+                    changeExclusion(c);
+                    cs.updateClient(c);
+                }
+                case 6 -> {
+                    return;
+                }
                 default -> printer.print("Niepoprawny wybór");
             }
-            cs.updateClient(c);
-        });
+            String choice = reader.readText("Czy chcesz zmienić jeszcze jakieś dane? t/n");
+            if (choice.equalsIgnoreCase("n")) {
+                return;
+            }
+        }
     }
 
     private void changeExclusion(Client client) {
@@ -139,12 +166,13 @@ public class ClientController {
         printer.print("3 - Miejscowość");
         printer.print("4 - Nr telefonu");
         printer.print("5 - Wykluczenia");
+        printer.print("6 - Wróć do poprzedniego menu");
     }
 
     public void deleteClient () {
         List<Client> clients = searchClientWithRetry();
         printer.printAll(clients);
-        int id = reader.readPositiveNumber("Wpisz id clienta którego chcesz usunąć");
+        int id = reader.readPositiveNumber("Wpisz id klienta którego chcesz usunąć");
         if (cs.findById(id).isEmpty()) {
             printer.print("Klient o podanym id nie istnieje");
         } else {
