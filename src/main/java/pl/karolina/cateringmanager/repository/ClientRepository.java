@@ -29,6 +29,7 @@ public class ClientRepository {
              ResultSet rs = stmt.executeQuery("SELECT * FROM clients")) {
             while (rs.next()) {
                 Client client = mapClient(rs);
+                clients.add(client);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch clients from database", e);
@@ -96,7 +97,7 @@ public class ClientRepository {
              stmt.setInt(1, id);
              try (ResultSet rs = stmt.executeQuery()) {
                  if (rs.next()) {
-                     Client client = mapClient(rs);
+                     return Optional.of(mapClient(rs));
                  }
              }
         } catch (SQLException e) {
@@ -117,6 +118,7 @@ public class ClientRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Client client = mapClient(rs);
+                    clients.add(client);
                 }
             }
         } catch (SQLException e) {
