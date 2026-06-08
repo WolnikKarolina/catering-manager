@@ -29,7 +29,13 @@ public class MainMenu {
 
     public void run() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Klienci \n 2 - Zamówienia \n 3 - Ceny \n 4 - Raporty \n 5 - Płatności \n 6 - Wyjście z programu");
+            printer.print("1 - Klienci");
+            printer.print("2 - Zamówienia");
+            printer.print("3 - Ceny");
+            printer.print("4 - Raporty");
+            printer.print("5 - Płatności");
+            printer.print("6 - Wyjście z programu");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> clientsMenu();
                 case 2 -> ordersMenu();
@@ -55,7 +61,10 @@ public class MainMenu {
 
     private void priceMenu() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Wyświetl cennik \n 2 - Zmień ceny \n 3 - Powrót do poprzedniego menu"  );
+            printer.print("1 - Wyświetl cennik");
+            printer.print("2 - Zmień ceny");
+            printer.print("3 - Powrót do poprzedniego menu");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> {}
                 case 2 -> {}
@@ -70,7 +79,12 @@ public class MainMenu {
 
     private void ordersMenu() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Dodaj nowe zamówienie \n 2 - Wyświetl zamówienia klienta \n 3 - Edytuj zamówienie \n 4 - Usuń zamówienie \n 5 - Wyjście do poprzedniego menu");
+            printer.print("1 - Dodaj nowe zamówienie");
+            printer.print("2 - Wyświetl zamówienia klienta");
+            printer.print("3 - Edytuj zamówienie");
+            printer.print("4 - Usuń zamówienie");
+            printer.print("5 - Wyjście do poprzedniego menu");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> orderctrl.addOrder();
                 case 2 -> printOrders();
@@ -86,7 +100,10 @@ public class MainMenu {
 
     private void printOrders() {
         orderctrl.printOrders();
-        int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Edytuj zamówienie \n 2 - Usuń zamówienie \n 3 - Powrót do poprzedniego menu");
+        printer.print("1 - Edytuj zamówienie");
+        printer.print("2 - Usuń zamówienie");
+        printer.print("3 - Powrót do poprzedniego menu");
+        int choice = reader.readPositiveNumber("Wybierz opcję");
         switch (choice) {
             case 1 -> orderctrl.editOrders();
             case 2 -> orderctrl.deleteOrder();
@@ -99,7 +116,12 @@ public class MainMenu {
 
     private void clientsMenu() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Wyświetl wszystkich klientów \n 2 - Wyszukaj klienta \n 3 - Dodaj nowego klienta \n 4 - Edytuj/Unuń \n 5 - Wyjście do poprzedniego menu");
+            printer.print("1 - Wyświetl wszystkich klientów");
+            printer.print("2 - Wyszukaj klienta");
+            printer.print("3 - Dodaj nowego klienta");
+            printer.print("4 - Edytuj/Unuń");
+            printer.print("5 - Wyjście do poprzedniego menu");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> clientctrl.printAllClients();
                 case 2 -> clientctrl.printClient();
@@ -115,7 +137,10 @@ public class MainMenu {
 
     private void findOrDeleteClient() {
         while (true) {
-            int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Edytuj dane \n 2 - Usuń klienta \n 3 - Powrót do poprzedniego menu");
+            printer.print("1 - Edytuj dane");
+            printer.print("2 - Usuń klienta");
+            printer.print("3 - Powrót do poprzedniego menu");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> clientctrl.updateClientData();
                 case 2 -> clientctrl.deleteClient();
