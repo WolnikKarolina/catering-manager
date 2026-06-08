@@ -128,14 +128,10 @@ public class MainMenu {
     }
 
     private void findClient() {
-        while (true) {
-            clientctrl.printClient();
-            String choice = reader.readText("Czy chcesz edytować dane? t/n");
-            if (choice.equals("t")) {
-                clientctrl.updateClientData();
-            } else {
-                return;
-            }
+        clientctrl.printClient();
+        String choice = reader.readText("Czy chcesz edytować dane? t/n");
+        if (choice.equals("t")) {
+            clientctrl.updateClientData();
         }
     }
 }
