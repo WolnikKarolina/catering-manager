@@ -102,7 +102,7 @@ public class MainMenu {
             int choice = reader.readPositiveNumber("Wybierz opcję: \n 1 - Wyświetl wszystkich klientów \n 2 - Wyszukaj klienta \n 3 - Dodaj nowego klienta \n 4 - Edytuj/Unuń \n 5 - Wyjście do poprzedniego menu");
             switch (choice) {
                 case 1 -> clientctrl.printAllClients();
-                case 2 -> findClient();
+                case 2 -> clientctrl.printClient();
                 case 3 -> clientctrl.addClient();
                 case 4 -> findOrDeleteClient();
                 case 5 -> {
@@ -127,11 +127,4 @@ public class MainMenu {
         }
     }
 
-    private void findClient() {
-        clientctrl.printClient();
-        String choice = reader.readText("Czy chcesz edytować dane? t/n");
-        if (choice.equals("t")) {
-            clientctrl.updateClientData();
-        }
-    }
 }
