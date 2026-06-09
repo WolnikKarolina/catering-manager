@@ -45,7 +45,4 @@ public class ClientService {
         cr.update(client);
     }
 
-    public void deleteClient(int id) {
-        cr.delete(id);
-    }
 }

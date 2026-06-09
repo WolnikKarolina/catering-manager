@@ -45,7 +45,7 @@ public class ClientController {
                 }
                 String ingredient = reader.readText("Wpisz wykluczenie").trim();
                 if (exclusions.add(ingredient)) {
-                    printer.print("Dodano wykluczenie" + ingredient);
+                    printer.print("Dodano wykluczenie: " + ingredient);
                 } else {
                     printer.print("To wykluczenie już istnieje");
                 }
@@ -169,15 +169,5 @@ public class ClientController {
         printer.print("6 - Wróć do poprzedniego menu");
     }
 
-    public void deleteClient () {
-        List<Client> clients = searchClientWithRetry();
-        printer.printAll(clients);
-        int id = reader.readPositiveNumber("Wpisz id klienta którego chcesz usunąć");
-        if (cs.findById(id).isEmpty()) {
-            printer.print("Klient o podanym id nie istnieje");
-        } else {
-            cs.deleteClient(id);
-            printer.print("Usunięto klienta o id: " + id );
-        }
-    }
+
 }

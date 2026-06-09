@@ -119,35 +119,18 @@ public class MainMenu {
             printer.print("1 - Wyświetl wszystkich klientów");
             printer.print("2 - Wyszukaj klienta");
             printer.print("3 - Dodaj nowego klienta");
-            printer.print("4 - Edytuj/Unuń");
+            printer.print("4 - Edytuj");
             printer.print("5 - Wyjście do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
                 case 1 -> clientctrl.printAllClients();
                 case 2 -> clientctrl.printClient();
                 case 3 -> clientctrl.addClient();
-                case 4 -> findOrDeleteClient();
+                case 4 -> clientctrl.updateClientData();
                 case 5 -> {
                     return;
                 }
                 default -> printer.print("Niepoprawna opcja spróbuj ponownie");
-            }
-        }
-    }
-
-    private void findOrDeleteClient() {
-        while (true) {
-            printer.print("1 - Edytuj dane");
-            printer.print("2 - Usuń klienta");
-            printer.print("3 - Powrót do poprzedniego menu");
-            int choice = reader.readPositiveNumber("Wybierz opcję");
-            switch (choice) {
-                case 1 -> clientctrl.updateClientData();
-                case 2 -> clientctrl.deleteClient();
-                case 3 -> {
-                    return;
-                }
-                default -> printer.print("Niepoprawny wybór, spróbuj ponownie");
             }
         }
     }
