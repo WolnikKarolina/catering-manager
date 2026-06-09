@@ -11,12 +11,16 @@ public class ClientRepository {
     public void save(Client client) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO clients (name, address, city, phone) VALUES (?, ?, ?, ? )")) {
+                     "INSERT INTO clients (name, address, city, phone) VALUES (?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, client.getName());
             stmt.setString(2, client.getAddress());
             stmt.setString(3, client.getCity());
             stmt.setString(4, client.getPhone());
             stmt.executeUpdate();
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                client.setId(keys.getInt(1));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save client to database", e);
         }
