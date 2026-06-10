@@ -37,17 +37,15 @@ public class ClientController {
         final int MAX_INGREDIENTS = 4;
         Set<String> exclusions = new HashSet<>();
         while (true) {
+            if (isMaxExclusions(exclusions, MAX_INGREDIENTS)) return exclusions;
             String choice = reader.readText("Dodać wykluczenia? t/n").trim();
             if (choice.equalsIgnoreCase("t")) {
-                if (exclusions.size() >= MAX_INGREDIENTS) {
-                    printer.print("Osiągnięto mksymalną liczbe wykluczeń");
-                    return exclusions;
-                }
                 String ingredient = reader.readText("Wpisz wykluczenie").trim();
                 if (exclusions.add(ingredient)) {
                     printer.print("Dodano wykluczenie: " + ingredient);
+                    if (isMaxExclusions(exclusions, MAX_INGREDIENTS)) return exclusions;
                 } else {
-                    printer.print("To wykluczenie już istnieje");
+                    printer.print(" -> To wykluczenie już istnieje <-");
                 }
             } else if (choice.equalsIgnoreCase("n")) {
                 return exclusions;
@@ -55,6 +53,14 @@ public class ClientController {
                 printer.print("Nieprawidłowy wybór, wpisz t lub n");
             }
         }
+    }
+
+    private boolean isMaxExclusions (Set<String> exclusions, int max) {
+        if (exclusions.size() >= max) {
+            printer.print(" -> Osiągnięto mksymalną liczbe wykluczeń <-");
+            return true;
+        }
+        return false;
     }
 
     public void printAllClients() {
@@ -144,6 +150,11 @@ public class ClientController {
     }
 
     private void changeExclusion(Client client) {
+        if (client.getExclusions().isEmpty()) {
+            printer.print("Klient nie ma wykluczeń");
+            createExclusion();
+            return;
+        }
         for (String ingredient : client.getExclusions()) {
             printer.print(ingredient);
             int choice = reader.readPositiveNumber("1 - Zmień / 2 - Usuń / 3 - Zostaw");
