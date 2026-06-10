@@ -21,6 +21,9 @@ public class ClientRepository {
             if (keys.next()) {
                 client.setId(keys.getInt(1));
             }
+            for (String ingredient : client.getExclusions()) {
+                addExclusion(client.getId(), ingredient);
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save client to database", e);
         }
