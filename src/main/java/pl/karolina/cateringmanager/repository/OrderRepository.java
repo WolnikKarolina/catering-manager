@@ -15,7 +15,7 @@ public class OrderRepository {
     public void save(Order order) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO orders (client_id, date, calories, diet_type, discount, price) VALUES (?, ?, ?, ?, ?, ? )")) {
+                     "INSERT INTO orders (client_id, date, calories, diet_type, discount, price) VALUES (?, ?, ?, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, order.getClientId());
             stmt.setDate(2, Date.valueOf(order.getDate()));
             stmt.setInt(3, order.getCalories().getKcal());
@@ -23,6 +23,10 @@ public class OrderRepository {
             stmt.setDouble(5, order.getDiscount());
             stmt.setDouble(6, order.getPrice());
             stmt.executeUpdate();
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                order.setId(keys.getInt(1));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save order to database", e);
         }
@@ -87,6 +91,7 @@ public class OrderRepository {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Order order = new Order();
+                    order.setId(rs.getInt("id"));
                     order.setClientId(rs.getInt("client_id"));
                     order.setDate(rs.getDate("date").toLocalDate());
                     order.setCalories(Calories.fromKcal(rs.getInt("calories")));
@@ -133,7 +138,7 @@ public class OrderRepository {
     public void deleteOrdersByDates (int clientId, LocalDate startDate, LocalDate finishDate) {
         try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM orders WHERE id = ? AND date BETWEEN ? AND ?")){
+                    "DELETE FROM orders WHERE client_id = ? AND date BETWEEN ? AND ?")){
             stmt.setInt(1, clientId);
             stmt.setDate(2, Date.valueOf(startDate));
             stmt.setDate(3, Date.valueOf(finishDate));
