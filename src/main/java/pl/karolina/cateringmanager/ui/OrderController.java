@@ -41,6 +41,10 @@ public class OrderController {
             if (client.isEmpty()) {
                 return;
             }
+            List<Order> orders = os.findOrderByClientId(client.get().getId());
+            if (!orders.isEmpty()) {
+                printer.print("Klient posiada zamówienia, aby je zobaczyć powróć do poprzendiego menu");
+            }
             Optional <OrderData> orderData = getOrderData();
             if (orderData.isEmpty()) {
                 return;
