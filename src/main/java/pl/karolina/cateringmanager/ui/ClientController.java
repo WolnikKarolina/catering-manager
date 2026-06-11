@@ -92,9 +92,7 @@ public class ClientController {
             if (clients.isEmpty()) {
                 printer.print("Brak danych w bazie");
                 String choice = reader.readText("Chcesz szukac dalej? t/n").trim();
-                if (choice.equalsIgnoreCase("t")) {
-                    continue;
-                } else if (choice.equalsIgnoreCase("n")) {
+                if (choice.equalsIgnoreCase("n")) {
                     return new ArrayList<>();
                 }
             } else {
@@ -116,37 +114,41 @@ public class ClientController {
         printDataToChange();
         while (true) {
             int toChange = reader.readPositiveNumber("Które dane chcesz zmienić");
-            switch (toChange) {
-                case 1 -> {
-                    c.setName(reader.readText("Podaj nowe Imię i Nazwisko").trim());
-                    cs.updateClient(c);
-                }
-                case 2 -> {
-                    c.setAddress(reader.readText("Podaj nowy adres").trim());
-                    cs.updateClient(c);
-                }
-                case 3 -> {
-                    c.setCity(reader.readText("Podaj nową miejscowość").trim());
-                    cs.updateClient(c);
-                }
-                case 4 -> {
-                    c.setPhone(reader.readText("Podaj nowy nr telefonu").trim());
-                    cs.updateClient(c);
-                }
-                case 5 -> {
-                    changeExclusion(c);
-                    cs.updateClient(c);
-                }
-                case 6 -> {
-                    return;
-                }
-                default -> printer.print("Niepoprawny wybór");
-            }
+            if (applyChange(toChange, c)) return;
             String choice = reader.readText("Czy chcesz zmienić jeszcze jakieś dane? t/n");
             if (choice.equalsIgnoreCase("n")) {
                 return;
             }
         }
+    }
+
+    private boolean applyChange(int toChange, Client c) {
+        switch (toChange) {
+            case 1 -> {
+                c.setName(reader.readText("Podaj nowe Imię i Nazwisko").trim());
+                cs.updateClient(c);
+            }
+            case 2 -> {
+                c.setAddress(reader.readText("Podaj nowy adres").trim());
+                cs.updateClient(c);
+            }
+            case 3 -> {
+                c.setCity(reader.readText("Podaj nową miejscowość").trim());
+                cs.updateClient(c);
+            }
+            case 4 -> {
+                c.setPhone(reader.readText("Podaj nowy nr telefonu").trim());
+                cs.updateClient(c);
+            }
+            case 5 -> {
+                changeExclusion(c);
+            }
+            case 6 -> {
+                return true;
+            }
+            default -> printer.print("Niepoprawny wybór");
+        }
+        return false;
     }
 
     private void changeExclusion(Client client) {
@@ -158,30 +160,42 @@ public class ClientController {
             }
             return;
         }
-        for (String ingredient : client.getExclusions()) {
+        Set<String> exclusionsCopy = new HashSet<>(client.getExclusions());
+        for (String ingredient : exclusionsCopy) {
             printer.print(ingredient);
             int choice = reader.readPositiveNumber("1 - Zmień / 2 - Usuń / 3 - Zostaw / 4 - Dodaj nowe");
             switch (choice) {
-                case 1 -> {
-                    String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
-                    cs.deleteExclusion(client.getId(), ingredient);
-                    cs.addExclusion(client.getId(), newIngredient);
-                    printer.print("Zmieniono wykluczenie");
-                }
-                case 2 -> cs.deleteExclusion(client.getId(), ingredient);
-                case 3 -> {continue;}
-                case 4 -> {
-                    String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
-                    if (client.getExclusions().add(newIngredient)) {
-                        cs.addExclusion(client.getId(), newIngredient);
-                        printer.print("Dodano wykluczenie: " + newIngredient);
-                    } else {
-                        printer.print("To wykluczenie już istnieje");
-                    }
-                }
+                case 1 -> changeIngredient(client, ingredient);
+                case 2 -> deleteIngredient(client, ingredient);
+                case 3 -> {}
+                case 4 -> addIngredient(client);
                 default -> printer.print("Niepoprawny wybór");
             }
         }
+    }
+
+    private void deleteIngredient(Client client, String ingredient) {
+        cs.deleteExclusion(client.getId(), ingredient);
+        client.getExclusions().remove(ingredient);
+    }
+
+    private void addIngredient(Client client) {
+        String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
+        if (client.getExclusions().add(newIngredient)) {
+            cs.addExclusion(client.getId(), newIngredient);
+            printer.print("Dodano wykluczenie: " + newIngredient);
+        } else {
+            printer.print("To wykluczenie już istnieje");
+        }
+    }
+
+    private void changeIngredient(Client client, String ingredient) {
+        String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
+        cs.deleteExclusion(client.getId(), ingredient);
+        cs.addExclusion(client.getId(), newIngredient);
+        client.getExclusions().remove(ingredient);
+        client.getExclusions().add(newIngredient);
+        printer.print("Zmieniono wykluczenie");
     }
 
     private void printDataToChange() {
