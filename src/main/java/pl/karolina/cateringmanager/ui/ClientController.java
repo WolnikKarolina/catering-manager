@@ -152,12 +152,15 @@ public class ClientController {
     private void changeExclusion(Client client) {
         if (client.getExclusions().isEmpty()) {
             printer.print("Klient nie ma wykluczeń");
-            createExclusion();
+            Set<String> exclusions = createExclusion();
+            for (String exclusion : exclusions) {
+                cs.addExclusion(client.getId(), exclusion);
+            }
             return;
         }
         for (String ingredient : client.getExclusions()) {
             printer.print(ingredient);
-            int choice = reader.readPositiveNumber("1 - Zmień / 2 - Usuń / 3 - Zostaw");
+            int choice = reader.readPositiveNumber("1 - Zmień / 2 - Usuń / 3 - Zostaw / 4 - Dodaj nowe");
             switch (choice) {
                 case 1 -> {
                     String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
@@ -166,6 +169,16 @@ public class ClientController {
                     printer.print("Zmieniono wykluczenie");
                 }
                 case 2 -> cs.deleteExclusion(client.getId(), ingredient);
+                case 3 -> {continue;}
+                case 4 -> {
+                    String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
+                    if (client.getExclusions().add(newIngredient)) {
+                        cs.addExclusion(client.getId(), newIngredient);
+                        printer.print("Dodano wykluczenie: " + newIngredient);
+                    } else {
+                        printer.print("To wykluczenie już istnieje");
+                    }
+                }
                 default -> printer.print("Niepoprawny wybór");
             }
         }
