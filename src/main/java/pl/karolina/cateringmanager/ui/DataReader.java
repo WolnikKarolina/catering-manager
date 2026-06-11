@@ -2,6 +2,7 @@ package pl.karolina.cateringmanager.ui;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class DataReader {
@@ -44,10 +45,16 @@ public class DataReader {
     }
 
     public LocalDate readDate(String prompt) {
-        printer.print(prompt);
-        printer.print("Format: dd-mm-yyyy");
-        String input = sc.nextLine();
-        return LocalDate.parse(input, dateFormat);
+        while (true) {
+            try {
+                printer.print(prompt);
+                printer.print("Format: dd-mm-yyyy");
+                String input = sc.nextLine();
+                return LocalDate.parse(input, dateFormat);
+            } catch (DateTimeParseException e) {
+                printer.print("Niepoprawna data, wpisz np 12-10-2026");
+            }
+        }
     }
 
     public void close() {
