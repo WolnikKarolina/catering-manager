@@ -107,23 +107,29 @@ public class OrderController {
         }
         LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
+        if (validationDataRange(startDate, finishDate)) return;
+        List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
+        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
+        for (Order order : ordersByDate) {
+        applyEdit(order, choice);
+        return;
+        }
+    }
+
+    private boolean validationDataRange(LocalDate startDate, LocalDate finishDate) {
         if (startDate.isBefore(today)) {
             String choice = reader.readText("Edytujesz zrealizowane zamówienie, czy chcesz kontynuować? t/n").trim();
-            if (choice.equalsIgnoreCase("n")) return;
+            if (choice.equalsIgnoreCase("n")) return true;
         }
         if (finishDate.isBefore(startDate)) {
             printer.print("Data końcowa jest przed datą początkową, spróbuj ponownie");
-            return;
+            return true;
         }
         if (startDate.getYear() != today.getYear() && finishDate.getYear() != today.getYear()) {
             String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuowac t/n").trim();
-            if (choice.equalsIgnoreCase("n")) return;
+            if (choice.equalsIgnoreCase("n")) return true;
         }
-        List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
-        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
-        for (Order order : ordersByDate) {
-        applyEdit(order, choice);
-        }
+        return false;
     }
 
     private void applyEdit (Order order, int choice) {
