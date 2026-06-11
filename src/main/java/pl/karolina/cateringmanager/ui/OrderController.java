@@ -54,7 +54,12 @@ public class OrderController {
     }
 
     private void processOrderChoice(Client client, OrderData orderData) {
-        int choice = reader.readPositiveNumber("1 - zamównie na pojedyncze dni \n 2 - zamównie na dni robocze \n 3 - zamówienie z sobotami \n 4 - zamówienie razem z weekedami \n 5 - Wróć do poprzedniego menu");
+        printer.print("1 - Zamównie na pojedyncze dni");
+        printer.print("2 - Zamównie na dni robocze");
+        printer.print("3 - Zamówienie z sobotami");
+        printer.print("4 - Zamówienie razem z weekedami");
+        printer.print("5 - Wróć do poprzedniego menu");
+        int choice = reader.readPositiveNumber( "Wybierz opcję zamówienia:");
         switch (choice) {
             case 1 -> addDates(orderPerDay(), client, orderData);
             case 2 -> addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
@@ -130,13 +135,14 @@ public class OrderController {
         }
         os.updateOrder(order);
         printer.print("Zamówienie zmienione");
+        return;
     }
 
     public void editSingleOrder() {
         printOrders();
         int orderId = reader.readPositiveNumber("Wpisz nr zamówienia które chcesz edytować");
         Order order = os.findOrderById(orderId);
-        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n  3 - rabat");
+        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
         applyEdit(order, choice);
     }
 
@@ -268,6 +274,16 @@ public class OrderController {
         List<LocalDate> dates = new LinkedList<>();
         while (true) {
             LocalDate date = reader.readDate("Podaj datę");
+            if (date.isBefore(today)) {
+                String choice = reader.readText("Podana data juz była, czy dodac mimo to? t/n");
+                if (choice.equalsIgnoreCase("n")) {
+                    continue;
+                }
+                if (!choice.equalsIgnoreCase("t")) {
+                    printer.print("Niepoprawny wybór");
+                    continue;
+                }
+            }
             dates.add(date);
             String choice = reader.readText("Czy dodać kolejny dzień? t/n").trim();
             if (choice.equalsIgnoreCase("n")) {

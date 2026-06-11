@@ -45,7 +45,7 @@ public class DataReader {
 
     public LocalDate readDate(String prompt) {
         printer.print(prompt);
-        printer.print("Podaj date w formacie dd-mm-yyyy");
+        printer.print("Format: dd-mm-yyyy");
         String input = sc.nextLine();
         return LocalDate.parse(input, dateFormat);
     }
