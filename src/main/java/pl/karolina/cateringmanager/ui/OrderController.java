@@ -79,10 +79,7 @@ public class OrderController {
         DietType dietType = readDietType();
         Double discount = readDiscount();
         Optional<Price> price = readPrice(calories);
-        if (price.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new OrderData(calories, dietType, discount, price.get()));
+        return price.map(value -> new OrderData(calories, dietType, discount, value));
     }
 
     private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
@@ -94,12 +91,14 @@ public class OrderController {
             printer.print("Klient nie istnieje");
             return;
         }
+        LocalDate from = reader.readDate("Wprowadź datę od której chcesz zobaczyć zamówienia");
         List<Order> orders = os.findOrderByClientId(client.get().getId());
-        if (orders.isEmpty()) {
-            printer.print("Brak zamówień dla danego klienta");
-            return;
+        List<Order> filtered = orders.stream()
+                .filter(o -> !o.getDate().isBefore(from)).toList();
+        if (filtered.isEmpty()) {
+            printer.print("Brak zamówień dla danego klienta od podanej daty");
         } else {
-            orders.forEach(printer::print);
+            filtered.forEach(printer::print);
         }
     }
     
