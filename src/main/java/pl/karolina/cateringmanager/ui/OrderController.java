@@ -6,10 +6,7 @@ import pl.karolina.cateringmanager.service.PriceService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class OrderController {
@@ -96,9 +93,11 @@ public class OrderController {
         List<Order> filtered = orders.stream()
                 .filter(o -> !o.getDate().isBefore(from)).toList();
         if (filtered.isEmpty()) {
-            printer.print("Brak zamówień dla danego klienta od podanej daty");
+            printer.print("Brak zamówień dla danego klienta");
         } else {
-            filtered.forEach(printer::print);
+            filtered.stream()
+                    .sorted(Comparator.comparing(Order::getDate))
+                            .forEach(printer::print);
         }
     }
     
