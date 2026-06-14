@@ -34,13 +34,14 @@ public class OrderController {
 
     private void createOrders() {
         while (true) {
-            Optional<Client> client = takeClient();
-            if (client.isEmpty()) {
+            Optional<Client> optionalClient = takeClient();
+            if (optionalClient.isEmpty()) {
                 return;
             }
             List<Order> orders = os.findOrderByClientId(client.get().getId());
             if (!orders.isEmpty()) {
                 printer.print("Klient posiada zamówienia, aby je zobaczyć powróć do poprzendiego menu");
+            Client client = optionalClient.get();
             }
             Optional <OrderData> orderData = getOrderData();
             if (orderData.isEmpty()) {
