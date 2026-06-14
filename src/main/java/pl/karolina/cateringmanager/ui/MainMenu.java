@@ -100,18 +100,7 @@ public class MainMenu {
 
     private void printOrders() {
         orderctrl.printOrders();
-        printer.print("1 - Edytuj zamówienie");
-        printer.print("2 - Usuń zamówienie");
-        printer.print("3 - Powrót do poprzedniego menu");
-        int choice = reader.readPositiveNumber("Wybierz opcję");
-        switch (choice) {
-            case 1 -> orderctrl.editOrders();
-            case 2 -> orderctrl.deleteOrder();
-            case 3 -> {
-                return;
-            }
-            default -> printer.print("Niepoprawna opcja, spróbuj ponownie");
-        }
+        int choice = reader.readPositiveNumber("Powrót do poprzedniego menu? Wciśnij 1");
     }
 
     private void clientsMenu() {
