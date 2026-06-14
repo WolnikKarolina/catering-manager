@@ -1,10 +1,12 @@
 package pl.karolina.cateringmanager.service;
 
+import pl.karolina.cateringmanager.model.Client;
 import pl.karolina.cateringmanager.model.Order;
 import pl.karolina.cateringmanager.repository.OrderRepository;
 import pl.karolina.cateringmanager.repository.PriceRepository;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class OrderService {
@@ -37,6 +39,14 @@ public class OrderService {
 
     public List<Order> findOrderByClientId (int id) {
         return or.findOrdersByClientId(id);
+    }
+
+    public List<Order> findOrdersByClientFromDate(Client client, LocalDate date) {
+        List<Order> orders = findOrderByClientId(client.getId());
+        return orders.stream()
+                .filter(o -> !o.getDate().isBefore(date))
+                .sorted(Comparator.comparing(Order::getDate))
+                .toList();
     }
 
     public void updateOrder(Order order) {
