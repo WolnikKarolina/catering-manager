@@ -38,19 +38,24 @@ public class OrderController {
             if (optionalClient.isEmpty()) {
                 return;
             }
-            List<Order> orders = os.findOrderByClientId(client.get().getId());
-            if (!orders.isEmpty()) {
-                printer.print("Klient posiada zamówienia, aby je zobaczyć powróć do poprzendiego menu");
             Client client = optionalClient.get();
+            List<Order> activeOrders = os.findOrdersByClientFromDate(client, today);
+            if (!activeOrders.isEmpty()) {
+                printer.print("Klient posiada aktywne zamówienia");
             }
-            Optional <OrderData> orderData = getOrderData();
-            if (orderData.isEmpty()) {
-                return;
-            }
-            processOrderChoice(client.get(), orderData.get());
-            String again = reader.readText("Czy chcesz złożyć kolejne zamówienie? t/n").trim();
-            if (again.equalsIgnoreCase("n")) {
-                return;
+            int choice = reader.readPositiveNumber("1 - złóż zamówienie / 2 - Wróć do poprzedniego menu");
+            switch (choice) {
+                case 1 ->{
+                    Optional <OrderData> optionalOrderData = getOrderData();
+                    if (optionalOrderData.isEmpty()) {
+                        return;
+                    }
+                    OrderData orderData = optionalOrderData.get();
+                    processOrderChoice(client, orderData);
+                }
+                case 2 -> {
+                    return;
+                }
             }
         }
     }
@@ -83,35 +88,34 @@ public class OrderController {
     private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
     }
 
-    public void printOrders () {
-        Optional<Client> client = takeClient();
-        if (client.isEmpty()) {
-            printer.print("Klient nie istnieje");
+    public void printOrders() {
+        Optional<Client> optionalClient = takeClient();
+        if (optionalClient.isEmpty()) {
+            printer.print("Nie znaleziono klienta");
             return;
         }
+        Client client = optionalClient.get();
         LocalDate from = reader.readDate("Wprowadź datę od której chcesz zobaczyć zamówienia");
-        List<Order> orders = os.findOrderByClientId(client.get().getId());
-        List<Order> filtered = orders.stream()
-                .filter(o -> !o.getDate().isBefore(from)).toList();
+        List<Order> filtered = os.findOrdersByClientFromDate(client, from);
         if (filtered.isEmpty()) {
             printer.print("Brak zamówień dla danego klienta");
         } else {
-            filtered.stream()
-                    .sorted(Comparator.comparing(Order::getDate))
-                            .forEach(printer::print);
+            filtered.forEach(printer::print);
         }
     }
-    
+
+
     public void editOrders() {
-        Optional<Client> client = takeClient();
-        if (client.isEmpty()) {
-            printer.print("Klient nie istnieje");
+        Optional<Client> optionalClient = takeClient();
+        if (optionalClient.isEmpty()) {
+            printer.print("Nie znaleziono klienta");
             return;
         }
+        Client client = optionalClient.get();
         LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         if (validationDataRange(startDate, finishDate)) return;
-        List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
+        List<Order> ordersByDate = os.findOrdersByDate(client.getId(), startDate, finishDate);
         int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
         for (Order order : ordersByDate) {
         applyEdit(order, choice);
