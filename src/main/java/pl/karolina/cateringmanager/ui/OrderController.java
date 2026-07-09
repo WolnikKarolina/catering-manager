@@ -116,7 +116,10 @@ public class OrderController {
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         if (validationDataRange(startDate, finishDate)) return;
         List<Order> ordersByDate = os.findOrdersByDate(client.getId(), startDate, finishDate);
-        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
+        int choice = reader.readPositiveNumber("Co chcesz edytować?");
+        printer.print("1 - Kalorie");
+        printer.print("2 - Typ diety");
+        printer.print("3 - Rabat");
         for (Order order : ordersByDate) {
         applyEdit(order, choice);
         return;
