@@ -16,15 +16,20 @@ public class PriceRepository {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM prices")) {
             while (rs.next()) {
-                Price price = new Price();
-                price.setCalories(Calories.fromKcal(rs.getInt("calories")));
-                price.setPrice(rs.getDouble("price"));
+                Price price = mapPrice(rs);
                 prices.add(price);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch prices from database", e);
         }
         return prices;
+    }
+
+    private static Price mapPrice(ResultSet rs) throws SQLException {
+        Price price = new Price();
+        price.setCalories(Calories.fromKcal(rs.getInt("calories")));
+        price.setPrice(rs.getDouble("price"));
+        return price;
     }
 
     public Optional<Price> findByCalories(int kcal) {
@@ -34,14 +39,12 @@ public class PriceRepository {
             stmt.setInt(1, kcal);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Price price = new Price();
-                    price.setCalories(Calories.fromKcal(rs.getInt("calories")));
-                    price.setPrice(rs.getDouble("price"));
+                    Price price = mapPrice(rs);
                     return Optional.of(price);
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to fetch price for calories: " + kcal);
         }
         return Optional.empty();
     }
