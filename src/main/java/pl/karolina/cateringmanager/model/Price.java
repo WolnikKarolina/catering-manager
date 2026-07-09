@@ -30,6 +30,6 @@ public class Price {
 
     @Override
     public String toString() {
-        return calories + " cena: " + price + "zł";
+        return calories + "KCAL, cena: " + price + "zł";
     }
 }

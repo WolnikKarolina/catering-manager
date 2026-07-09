@@ -13,6 +13,7 @@ public class MainMenu {
     private final Printer printer;
     private final ClientController clientctrl;
     private final OrderController orderctrl;
+    private final PriceController pricectrl;
 
     public MainMenu() {
         this.printer = new Printer();
@@ -25,6 +26,7 @@ public class MainMenu {
         PriceService ps = new PriceService(pr);
         this.clientctrl = new ClientController(cs, reader, printer);
         this.orderctrl = new OrderController(os, printer, reader, clientctrl, ps);
+        this.pricectrl = new PriceController(ps, reader, printer);
     }
 
     public void run() {
@@ -66,8 +68,8 @@ public class MainMenu {
             printer.print("3 - Powrót do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
             switch (choice) {
-                case 1 -> {}
-                case 2 -> {}
+                case 1 -> pricectrl.printAllPrices();
+                case 2 -> pricectrl.updatePrices();
                 case 3 -> {
                     return;
                 }
