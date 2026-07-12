@@ -10,6 +10,8 @@ public class Client {
     private String city;
     private String phone;
     private Set<String> exclusions;
+    private double credit;
+
 
     public Client() {
     }
@@ -85,6 +87,14 @@ public class Client {
 
     public void setExclusions(Set<String> exclusions) {
         this.exclusions = exclusions;
+    }
+
+    public double getCredit() {
+        return credit;
+    }
+
+    public void setCredit(double credit) {
+        this.credit = credit;
     }
 
     @Override

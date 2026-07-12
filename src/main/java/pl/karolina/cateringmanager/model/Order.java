@@ -12,6 +12,7 @@ public class Order {
     private DietType dietType;
     private double discount;
     private double price;
+    private boolean paid;
 
     public Order() {
     }
@@ -101,8 +102,18 @@ public class Order {
         this.price = price;
     }
 
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
     @Override
     public String toString() {
-        return "Zamówienie: " + id + ": Nr klienta: " + clientId + ", " + date + "; " + calories + " " + dietType + ";" + price + "zł";
+        return "Zamówienie: " + id + ": Nr klienta: " + clientId + ", " + date + "; " + calories + " " + dietType + ";" + price + "zł" + (paid ? ": OPŁACONE" : ": NIEOPŁACONE" );
     }
+
+
 }

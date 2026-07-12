@@ -47,6 +47,7 @@ public class OrderRepository {
                 order.setDietType(DietType.valueOf(rs.getString("diet_type")));
                 order.setDiscount(rs.getDouble("discount"));
                 order.setPrice(rs.getDouble("price"));
+                order.setPaid(rs.getBoolean("paid"));
                 return order;
             }
             throw new RuntimeException("Order not found: " + orderId);
@@ -73,6 +74,7 @@ public class OrderRepository {
                     order.setDietType(DietType.valueOf(rs.getString("diet_type")));
                     order.setDiscount(rs.getDouble("discount"));
                     order.setPrice(rs.getDouble("price"));
+                    order.setPaid(rs.getBoolean("paid"));
                     orders.add(order);
                 }
             }
@@ -98,6 +100,7 @@ public class OrderRepository {
                     order.setDietType(DietType.valueOf(rs.getString("diet_type")));
                     order.setDiscount(rs.getDouble("discount"));
                     order.setPrice(rs.getDouble("price"));
+                    order.setPaid(rs.getBoolean("paid"));
                     orders.add(order);
                 }
             }
@@ -118,6 +121,18 @@ public class OrderRepository {
             stmt.setDouble(5, order.getDiscount());
             stmt.setDouble(6, order.getPrice());
             stmt.setInt(7, order.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update order with id: " + order.getId(), e);
+        }
+    }
+
+    public void updatePaidStatus (Order order) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE orders SET paid = ? WHERE id = ?")) {
+            stmt.setBoolean(1, order.isPaid());
+            stmt.setInt(2, order.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update order with id: " + order.getId(), e);

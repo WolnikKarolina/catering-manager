@@ -53,6 +53,7 @@ public class ClientRepository {
         client.setCity(rs.getString("city"));
         client.setPhone(rs.getString("phone"));
         client.setExclusions(findExclusionsByClient(client.getId()));
+        client.setCredit(rs.getDouble("credit"));
         return client;
     }
 
@@ -149,6 +150,19 @@ public class ClientRepository {
             stmt.setString(4, client.getPhone());
             stmt.setInt(5, client.getId());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update client with id: " + client, e);
+        }
+    }
+
+    public void updateCredit ( Client client) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "UPDATE clients SET credit = ? WHERE id = ?")) {
+            stmt.setDouble(1, client.getCredit());
+            stmt.setInt(2, client.getId());
+            stmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update client with id: " + client, e);
         }
