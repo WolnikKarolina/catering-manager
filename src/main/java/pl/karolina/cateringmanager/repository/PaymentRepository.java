@@ -29,7 +29,7 @@ public class PaymentRepository {
         }
     }
 
-    public Optional<Payment> findPaymentFromId (int paymentId) {
+    public Optional<Payment> findPaymentById (int paymentId) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT * FROM payments WHERE id = ?")) {
@@ -46,7 +46,7 @@ public class PaymentRepository {
         return Optional.empty();
     }
 
-    private static Payment mapPayment(ResultSet rs) throws SQLException {
+    private Payment mapPayment(ResultSet rs) throws SQLException {
         Payment payment = new Payment();
         payment.setId(rs.getInt("id"));
         payment.setClientId(rs.getInt("client_id"));
@@ -70,6 +70,17 @@ public class PaymentRepository {
             return payments;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to get payment with client id " + clientId, e);
+        }
+    }
+
+    public void deletePayment(int id) {
+        try (Connection con = DatabaseConnection.getConnection();
+        PreparedStatement stmt = con.prepareStatement(
+                "DELETE FROM payments WHERE id = ?")) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete payments with id " + id, e);
         }
     }
 
