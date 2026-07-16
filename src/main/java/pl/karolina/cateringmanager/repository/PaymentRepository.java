@@ -84,6 +84,25 @@ public class PaymentRepository {
         }
     }
 
+    public double getTotalPaymentsByClient(int clientId) {
+        double totalPayments = 0;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT SUM(amount) FROM payments WHERE client_id = ?")) {
+            stmt.setInt(1, clientId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    totalPayments = rs.getDouble(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return totalPayments;
+    }
+
+
 
 
 }
