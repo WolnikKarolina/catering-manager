@@ -116,13 +116,40 @@ public class OrderController {
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         if (validationDataRange(startDate, finishDate)) return;
         List<Order> ordersByDate = os.findOrdersByDate(client.getId(), startDate, finishDate);
-        int choice = reader.readPositiveNumber("Co chcesz edytować?");
+        ordersByDate.forEach(printer::print);
         printer.print("1 - Kalorie");
         printer.print("2 - Typ diety");
         printer.print("3 - Rabat");
-        for (Order order : ordersByDate) {
-        applyEdit(order, choice);
+        int choice = reader.readPositiveNumber("Co chcesz edytować?");
+        applyEditToAll(choice, ordersByDate);
+        printer.print("Zamówienia zmienione");
         return;
+    }
+
+    private void applyEditToAll(int choice, List<Order> ordersByDate) {
+        switch (choice) {
+            case 1 -> {
+                Calories newCalories = readCalories();
+                for (Order order : ordersByDate) {
+                    order.setCalories(newCalories);
+                    os.updateOrder(order);
+                }
+            }
+            case 2 -> {
+                DietType newDietType = readDietType();
+                for (Order order : ordersByDate) {
+                    order.setDietType(newDietType);
+                    os.updateOrder(order);
+                }
+            }
+            case 3 -> {
+                double newDiscount = readDiscount();
+                for (Order order : ordersByDate) {
+                    order.setDiscount(newDiscount);
+                    os.updateOrder(order);
+                }
+            }
+            default -> throw new IllegalArgumentException("Unexpected value: " + choice);
         }
     }
 
