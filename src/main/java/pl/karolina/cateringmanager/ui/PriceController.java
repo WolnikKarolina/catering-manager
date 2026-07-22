@@ -1,6 +1,5 @@
 package pl.karolina.cateringmanager.ui;
 
-import pl.karolina.cateringmanager.model.Calories;
 import pl.karolina.cateringmanager.model.Price;
 import pl.karolina.cateringmanager.service.PriceService;
 
@@ -25,14 +24,14 @@ public class PriceController {
 
     public void updatePrices() {
         printAllPrices();
-        int kcal = reader.readPositiveNumber("Wpisz kaloryczność, której cene chcesz edytować");
+        int kcal = reader.readPositiveNumber("Wpisz kaloryczność, której cenę chcesz edytować");
         Optional<Price> optionalPrice = ps.findByCalories(kcal);
         if (optionalPrice.isEmpty()) {
             printer.print("Brak ceny dla podanej kaloryczności");
             return;
         }
         Price price = optionalPrice.get();
-        Double newPrice = (double) reader.readPositiveNumber("Wprowadź nową cenę");
+        double newPrice = (double) reader.readPositiveNumber("Wprowadź nową cenę");
         price.setPrice(newPrice);
         ps.update(price);
         printer.print("Zmieniono cenę: " + price);
