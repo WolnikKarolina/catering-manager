@@ -9,6 +9,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderRepository {
 
@@ -32,14 +33,14 @@ public class OrderRepository {
         }
     }
 
-    public Order findOrderById(int orderId) {
-        Order order = new Order();
-       try(Connection conn = DatabaseConnection.getConnection();
+    public Optional<Order> findOrderById(int orderId) {
+        try(Connection conn = DatabaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT * FROM orders WHERE id = ?")) {
             stmt.setInt(1, orderId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+                Order order = new Order();
                 order.setId(rs.getInt("id"));
                 order.setClientId(rs.getInt("client_id"));
                 order.setDate(rs.getDate("date").toLocalDate());
@@ -48,12 +49,12 @@ public class OrderRepository {
                 order.setDiscount(rs.getDouble("discount"));
                 order.setPrice(rs.getDouble("price"));
                 order.setPaid(rs.getBoolean("paid"));
-                return order;
+                return Optional.of(order);
             }
-            throw new RuntimeException("Order not found: " + orderId);
-       } catch (SQLException e) {
+        } catch (SQLException e) {
            throw new RuntimeException("Failed to get order with id: " + orderId, e);
        }
+        return Optional.empty();
     }
 
     public List<Order> findOrdersByClientIdByDates(int clientId, LocalDate startDate, LocalDate finishDate) {

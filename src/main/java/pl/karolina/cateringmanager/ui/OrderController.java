@@ -184,7 +184,7 @@ public class OrderController {
     public void editSingleOrder() {
         printOrders();
         int orderId = reader.readPositiveNumber("Wpisz nr zamówienia które chcesz edytować");
-        Order order = os.findOrderById(orderId);
+        Order order = os.findOrderById(orderId).orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
         int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
         applyEdit(order, choice);
     }

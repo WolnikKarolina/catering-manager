@@ -8,6 +8,7 @@ import pl.karolina.cateringmanager.repository.PriceRepository;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class OrderService {
 
@@ -24,7 +25,7 @@ public class OrderService {
         or.save(order);
     }
 
-    public Order findOrderById(int orderId) {
+    public Optional<Order> findOrderById(int orderId) {
         return or.findOrderById(orderId);
     }
 
