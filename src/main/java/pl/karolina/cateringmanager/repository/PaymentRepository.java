@@ -95,7 +95,6 @@ public class PaymentRepository {
                     totalPayments = rs.getDouble(1);
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
