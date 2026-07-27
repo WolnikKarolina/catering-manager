@@ -11,17 +11,15 @@ import java.util.Optional;
 public class PaymentService {
 
     private final PaymentRepository pr;
-    private final OrderRepository or;
-    private final ClientRepository cr;
 
-
-    public PaymentService(PaymentRepository pr, OrderRepository or, ClientRepository cr) {
+    public PaymentService(PaymentRepository pr) {
         this.pr = pr;
-        this.or = or;
-        this.cr = cr;
     }
 
     public void addPayment(Payment payment) {
+        if (payment.getAmount() <= 0) {
+            throw new IllegalArgumentException("Płatność musi być dodatnia");
+        }
         pr.save(payment);
     }
 
@@ -31,5 +29,15 @@ public class PaymentService {
 
     public List<Payment> findPaymentByClientId(int clientId) {
         return pr.findPaymentsByClientId(clientId);
+    }
+
+    public void deletePayment (int paymentId) {
+        findPaymentById(paymentId).orElseThrow(
+                () -> new RuntimeException("Payment not found: " + paymentId));
+        pr.deletePayment(paymentId);
+    }
+
+    public double getTotalPaymentByClient (int clientId) {
+        return pr.getTotalPaymentsByClient(clientId);
     }
 }
