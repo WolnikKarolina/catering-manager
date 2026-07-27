@@ -55,7 +55,7 @@ public class OrderController {
                         return;
                     }
                     OrderData orderData = optionalOrderData.get();
-                    processOrderChoice(client, orderData);
+                    processOrderChoice(client);
                 }
                 case 2 -> {
                     return;
@@ -64,16 +64,22 @@ public class OrderController {
         }
     }
 
-    private void processOrderChoice(Client client, OrderData orderData) {
-        int choice = menu.getProcessOrderChoice();
-        switch (choice) {
-            case 1 -> addDates(orderPerDay(), client, orderData);
-            case 2 -> addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
-            case 3 -> addDates(ordersFromRange(day -> day != DayOfWeek.SUNDAY), client, orderData);
-            case 4 -> addDates(ordersFromRange(day -> true), client, orderData);
-            case 5 -> {return;}
-            default -> printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
+    private void processOrderChoice(Client client) {
+        List<LocalDate> dates;
+        switch ( menu.getProcessOrderChoice()) {
+            case 1 -> dates = orderPerDay();
+            case 2 -> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
+            case 3 -> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
+            case 4 -> dates = ordersFromRange(day -> true);
+            case 5 -> {
+                return;
+            }
+            default -> {
+                printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
+                return;
+            }
         }
+        addDates(dates, client);
     }
 
     private Optional<OrderData> getOrderData() {
@@ -82,9 +88,6 @@ public class OrderController {
         Double discount = readDiscount();
         Optional<Price> price = readPrice(calories);
         return price.map(value -> new OrderData(calories, dietType, discount, value));
-    }
-
-    private record OrderData(Calories calories, DietType dietType, Double discount, Price price) {
     }
 
     public void printOrders() {
@@ -303,15 +306,17 @@ public class OrderController {
         }
     }
 
-    private void addDates(List<LocalDate> dates, Client client,OrderData orderData) {
+    private void addDates(List<LocalDate> dates, Client client) {
         if (dates.isEmpty()) {
             printer.print("Nie dodano zamówień");
             return;
         }
-        for (LocalDate d : dates) {
-            Order order = new Order(client.getId(), client, d, orderData.calories, orderData.dietType, orderData.discount, orderData.price.getPrice());
-            os.addOrder(order);
+        Optional<OrderData> optionalOrderData = getOrderData();
+        if (optionalOrderData.isEmpty()){
+            return;
         }
+        OrderData orderData = optionalOrderData.get();
+        os.createOrders(client, dates, orderData);
         printer.print("Dodano " + dates.size() + " zamówień");
     }
 

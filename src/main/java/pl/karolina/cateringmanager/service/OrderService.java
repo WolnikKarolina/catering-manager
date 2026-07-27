@@ -2,6 +2,7 @@ package pl.karolina.cateringmanager.service;
 
 import pl.karolina.cateringmanager.model.Client;
 import pl.karolina.cateringmanager.model.Order;
+import pl.karolina.cateringmanager.model.OrderData;
 import pl.karolina.cateringmanager.repository.OrderRepository;
 import pl.karolina.cateringmanager.repository.PriceRepository;
 
@@ -63,8 +64,11 @@ public class OrderService {
         or.deleteOneOrder(orderId);
     }
 
-    public boolean orderExistForDate(int clientId, LocalDate date) {
-        return or.findOrdersByClientId(clientId).stream().anyMatch(o -> o.getDate().equals(date));
+    public void createOrders(Client client, List<LocalDate> dates, OrderData orderData) {
+         for (LocalDate d : dates) {
+            Order order = new Order(client.getId(), client, d, orderData.calories(), orderData.dietType(), orderData.discount(), orderData.price().getPrice());
+            addOrder(order);
+        }
     }
 
 }
