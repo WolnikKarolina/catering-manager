@@ -7,6 +7,7 @@ import pl.karolina.cateringmanager.service.PriceService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class OrderController {
@@ -17,15 +18,18 @@ public class OrderController {
     private final ClientController clientctrl;
     private final PriceService ps;
     private final LocalDate today = LocalDate.now();
+    private final Menu menu;
 
 
-    public OrderController(OrderService os, Printer printer, DataReader reader, ClientController clientctrl, PriceService ps) {
+    public OrderController(OrderService os, Printer printer, DataReader reader, ClientController clientctrl, PriceService ps, Menu menu) {
         this.os = os;
         this.printer = printer;
         this.reader = reader;
         this.clientctrl = clientctrl;
         this.ps = ps;
+        this.menu = menu;
     }
+
 
     public void addOrder() {
         printer.print("--- Dodawanie nowego zamówienia ---");
@@ -61,12 +65,7 @@ public class OrderController {
     }
 
     private void processOrderChoice(Client client, OrderData orderData) {
-        printer.print("1 - Zamównie na pojedyncze dni");
-        printer.print("2 - Zamównie na dni robocze");
-        printer.print("3 - Zamówienie z sobotami");
-        printer.print("4 - Zamówienie razem z weekedami");
-        printer.print("5 - Wróć do poprzedniego menu");
-        int choice = reader.readPositiveNumber( "Wybierz opcję zamówienia:");
+        int choice = menu.getProcessOrderChoice();
         switch (choice) {
             case 1 -> addDates(orderPerDay(), client, orderData);
             case 2 -> addDates(ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY), client, orderData);
@@ -106,6 +105,14 @@ public class OrderController {
 
 
     public void editOrders() {
+       int choice = menu.getEditOrderChoice();
+        switch (choice) {
+            case 1 -> editSingleOrder();
+            case 2 -> editOrdersByTime();
+        }
+    }
+
+    private void editOrdersByTime() {
         Optional<Client> optionalClient = takeClient();
         if (optionalClient.isEmpty()) {
             printer.print("Nie znaleziono klienta");
@@ -117,16 +124,12 @@ public class OrderController {
         if (validationDataRange(startDate, finishDate)) return;
         List<Order> ordersByDate = os.findOrdersByDate(client.getId(), startDate, finishDate);
         ordersByDate.forEach(printer::print);
-        printer.print("1 - Kalorie");
-        printer.print("2 - Typ diety");
-        printer.print("3 - Rabat");
-        int choice = reader.readPositiveNumber("Co chcesz edytować?");
-        applyEditToAll(choice, ordersByDate);
+        applyEditToAll(ordersByDate);
         printer.print("Zamówienia zmienione");
-        return;
     }
 
-    private void applyEditToAll(int choice, List<Order> ordersByDate) {
+    private void applyEditToAll(List<Order> ordersByDate) {
+        int choice = menu.getOptionsToEditChoice();
         switch (choice) {
             case 1 -> {
                 Calories newCalories = readCalories();
@@ -149,7 +152,7 @@ public class OrderController {
                     os.updateOrder(order);
                 }
             }
-            default -> throw new IllegalArgumentException("Unexpected value: " + choice);
+            default -> throw new IllegalArgumentException("Niepoprawny wybór " + choice);
         }
     }
 
@@ -163,7 +166,7 @@ public class OrderController {
             return true;
         }
         if (startDate.getYear() != today.getYear() && finishDate.getYear() != today.getYear()) {
-            String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuowac t/n").trim();
+            String choice = reader.readText("Zamówienie wykracza poza bieżący rok czy chcesz kontynuować t/n").trim();
             if (choice.equalsIgnoreCase("n")) return true;
         }
         return false;
@@ -174,18 +177,17 @@ public class OrderController {
             case 1 -> order.setCalories(readCalories());
             case 2 -> order.setDietType(readDietType());
             case 3 -> order.setDiscount(readDiscount());
-            default -> throw new IllegalArgumentException("Unexpected value: " + choice);
+            default -> throw new IllegalArgumentException("Nieprawidłowa warość " + choice);
         }
         os.updateOrder(order);
         printer.print("Zamówienie zmienione");
-        return;
     }
 
     public void editSingleOrder() {
         printOrders();
         int orderId = reader.readPositiveNumber("Wpisz nr zamówienia które chcesz edytować");
         Order order = os.findOrderById(orderId).orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
-        int choice = reader.readPositiveNumber("Co chcesz edytować? \n 1 - Kalorie \n 2 - Typ diety \n 3 - Rabat");
+        int choice = menu.getOptionsToEditChoice();
         applyEdit(order, choice);
     }
 
