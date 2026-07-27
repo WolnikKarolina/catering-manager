@@ -51,12 +51,16 @@ public class OrderService {
     }
 
     public void updateOrder(Order order) {
+        findOrderById(order.getId()).orElseThrow(
+                () -> new RuntimeException("Brak zamówienia " + order.getId()));
         applyPrice(order);
         or.update(order);
     }
 
-    public void deleteOrder(int id) {
-        or.deleteOneOrder(id);
+    public void deleteOrder(int orderId) {
+        findOrderById(orderId).orElseThrow(
+                () -> new RuntimeException("Brak zamówienia " + orderId));
+        or.deleteOneOrder(orderId);
     }
 
     public boolean orderExistForDate(int clientId, LocalDate date) {

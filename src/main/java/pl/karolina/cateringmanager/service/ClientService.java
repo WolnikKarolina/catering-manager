@@ -42,6 +42,7 @@ public class ClientService {
     }
 
     public void updateClient(Client client) {
+        findById(client.getId()).orElseThrow(() -> new RuntimeException("Brak klienta " + client.getId()));
         cr.update(client);
     }
 
