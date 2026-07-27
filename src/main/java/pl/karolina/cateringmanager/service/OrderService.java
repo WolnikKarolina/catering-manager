@@ -64,6 +64,12 @@ public class OrderService {
         or.deleteOneOrder(orderId);
     }
 
+    public void deleteOrders(List<Order> ordersByDate) {
+        for (Order order : ordersByDate) {
+            deleteOrder(order.getId());
+        }
+    }
+
     public void createOrders(Client client, List<LocalDate> dates, OrderData orderData) {
          for (LocalDate d : dates) {
             Order order = new Order(client.getId(), client, d, orderData.calories(), orderData.dietType(), orderData.discount(), orderData.price().getPrice());

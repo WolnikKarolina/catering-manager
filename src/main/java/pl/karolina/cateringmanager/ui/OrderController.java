@@ -200,16 +200,14 @@ public class OrderController {
             printer.print("Klient nie istnieje");
             return;
         }
-        LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz edytować");
+        LocalDate startDate = reader.readDate("Podaj date początkową zamówienie które chcesz usunąć");
         LocalDate finishDate = reader.readDate("Podaj datę końcową");
         List<Order> ordersByDate = os.findOrdersByDate(client.get().getId(), startDate, finishDate);
         if (ordersByDate.isEmpty()) {
             printer.print("Brak zamówień w podanym przedziale");
             return;
         }
-        for (Order order : ordersByDate) {
-            os.deleteOrder(order.getId());
-        }
+        os.deleteOrders(ordersByDate);
         printer.print("Usunięto zamówienia w okresie: " + startDate + " - " + finishDate);
     }
 
