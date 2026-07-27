@@ -13,8 +13,8 @@ public class Main {
     static void main(String[] args) {
         System.out.println("Catering manager");
 
-        MainMenu menu = new MainMenu();
-        menu.run();
+        Application aplication = new Application();
+        aplication.start();
 
 
     }

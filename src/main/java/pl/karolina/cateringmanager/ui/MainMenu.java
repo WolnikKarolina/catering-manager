@@ -12,21 +12,15 @@ public class MainMenu {
     private final DataReader reader;
     private final Printer printer;
     private final ClientController clientctrl;
-    private final OrderController orderctrl;
     private final PriceController pricectrl;
+    private final OrderController orderctrl;
 
-    public MainMenu() {
-        this.printer = new Printer();
-        this.reader = new DataReader(printer);
-        ClientRepository cr = new ClientRepository();
-        OrderRepository or = new OrderRepository();
-        PriceRepository pr = new PriceRepository();
-        ClientService cs = new ClientService(cr);
-        OrderService os = new OrderService(or, pr);
-        PriceService ps = new PriceService(pr);
-        this.clientctrl = new ClientController(cs, reader, printer);
-        this.orderctrl = new OrderController(os, printer, reader, clientctrl, ps);
-        this.pricectrl = new PriceController(ps, reader, printer);
+    public MainMenu(DataReader reader, Printer printer, ClientController clientctrl, PriceController pricectrl, OrderController orderctrl) {
+        this.reader = reader;
+        this.printer = printer;
+        this.clientctrl = clientctrl;
+        this.pricectrl = pricectrl;
+        this.orderctrl = orderctrl;
     }
 
     public void run() {
