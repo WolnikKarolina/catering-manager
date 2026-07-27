@@ -10,11 +10,13 @@ public class ClientController {
     private final ClientService cs;
     private final DataReader reader;
     private final Printer printer;
+    private final Menu menu;
 
-    public ClientController(ClientService cs, DataReader reader, Printer printer) {
+    public ClientController(ClientService cs, DataReader reader, Printer printer, Menu menu) {
         this.cs = cs;
         this.reader = reader;
         this.printer = printer;
+        this.menu = menu;
     }
 
     public void addClient() {
@@ -141,7 +143,7 @@ public class ClientController {
                 cs.updateClient(c);
             }
             case 5 -> {
-                changeExclusion(c);
+                changeExclusion(c, menu);
             }
             case 6 -> {
                 return true;
@@ -151,7 +153,7 @@ public class ClientController {
         return false;
     }
 
-    private void changeExclusion(Client client) {
+    private void changeExclusion(Client client, Menu menu) {
         if (client.getExclusions().isEmpty()) {
             printer.print("Klient nie ma wykluczeń");
             Set<String> exclusions = createExclusion();
@@ -163,7 +165,7 @@ public class ClientController {
         Set<String> exclusionsCopy = new HashSet<>(client.getExclusions());
         for (String ingredient : exclusionsCopy) {
             printer.print(ingredient);
-            int choice = reader.readPositiveNumber("1 - Zmień / 2 - Usuń / 3 - Zostaw / 4 - Dodaj nowe");
+            int choice = menu.getIngredientChoice();
             switch (choice) {
                 case 1 -> changeIngredient(client, ingredient);
                 case 2 -> deleteIngredient(client, ingredient);
@@ -173,6 +175,8 @@ public class ClientController {
             }
         }
     }
+
+
 
     private void deleteIngredient(Client client, String ingredient) {
         cs.deleteExclusion(client.getId(), ingredient);

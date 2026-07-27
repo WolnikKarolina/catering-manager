@@ -24,7 +24,7 @@ public class Application {
         OrderService os = new OrderService(or, pr);
 
         ClientController clientctrl =
-                new ClientController(cs, reader, printer);
+                new ClientController(cs, reader, printer, menu);
 
         PriceController pricectrl =
                 new PriceController(ps, reader, printer);
