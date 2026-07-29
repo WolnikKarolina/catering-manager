@@ -55,7 +55,9 @@ public class OrderController {
                         return;
                     }
                     OrderData orderData = optionalOrderData.get();
-                    processOrderChoice(client);
+                    if (processOrderChoice(client, orderData)) {
+                        return;
+                    }
                 }
                 case 2 -> {
                     return;
@@ -64,22 +66,25 @@ public class OrderController {
         }
     }
 
-    private void processOrderChoice(Client client) {
+    private boolean processOrderChoice(Client client, OrderData orderData) {
         List<LocalDate> dates;
-        switch ( menu.getProcessOrderChoice()) {
-            case 1 -> dates = orderPerDay();
-            case 2 -> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
-            case 3 -> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
-            case 4 -> dates = ordersFromRange(day -> true);
-            case 5 -> {
-                return;
+        while (true) {
+            switch (menu.getProcessOrderChoice()) {
+                case 1 -> dates = orderPerDay();
+                case 2 -> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
+                case 3 -> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
+                case 4 -> dates = ordersFromRange(day -> true);
+                case 5 -> {
+                    return true;
+                }
+                default -> {
+                    printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
+                    continue;
+                }
             }
-            default -> {
-                printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
-                return;
-            }
+            addDates(dates, client, orderData);
+            return false;
         }
-        addDates(dates, client);
     }
 
     private Optional<OrderData> getOrderData() {
@@ -304,16 +309,11 @@ public class OrderController {
         }
     }
 
-    private void addDates(List<LocalDate> dates, Client client) {
+    private void addDates(List<LocalDate> dates, Client client, OrderData orderData) {
         if (dates.isEmpty()) {
             printer.print("Nie dodano zamówień");
             return;
         }
-        Optional<OrderData> optionalOrderData = getOrderData();
-        if (optionalOrderData.isEmpty()){
-            return;
-        }
-        OrderData orderData = optionalOrderData.get();
         os.createOrders(client, dates, orderData);
         printer.print("Dodano " + dates.size() + " zamówień");
     }
