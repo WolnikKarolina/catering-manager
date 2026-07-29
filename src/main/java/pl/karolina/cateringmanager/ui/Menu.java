@@ -42,4 +42,13 @@ public class Menu {
         printer.print("2 - Edytuj zamówienia w przedziale czasowym");
         return reader.readPositiveNumber("Wybirz opcję");
     }
+
+    public void printDataToChange() {
+        printer.print("1 - Imię i Nazwisko");
+        printer.print("2 - Adres");
+        printer.print("3 - Miejscowość");
+        printer.print("4 - Nr telefonu");
+        printer.print("5 - Wykluczenia");
+        printer.print("6 - Wróć do poprzedniego menu");
+    }
 }

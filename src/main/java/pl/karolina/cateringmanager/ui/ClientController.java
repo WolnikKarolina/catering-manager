@@ -36,16 +36,15 @@ public class ClientController {
     }
 
     private Set<String> createExclusion() {
-        final int MAX_INGREDIENTS = 4;
         Set<String> exclusions = new HashSet<>();
         while (true) {
-            if (isMaxExclusions(exclusions, MAX_INGREDIENTS)) return exclusions;
+            if (cs.canAddExclusions(exclusions)) return exclusions;
             String choice = reader.readText("Dodać wykluczenia? t/n").trim();
             if (choice.equalsIgnoreCase("t")) {
                 String ingredient = reader.readText("Wpisz wykluczenie").trim();
                 if (exclusions.add(ingredient)) {
                     printer.print("Dodano wykluczenie: " + ingredient);
-                    if (isMaxExclusions(exclusions, MAX_INGREDIENTS)) return exclusions;
+                    if (cs.canAddExclusions(exclusions)) return exclusions;
                 } else {
                     printer.print(" -> To wykluczenie już istnieje <-");
                 }
@@ -55,14 +54,6 @@ public class ClientController {
                 printer.print("Nieprawidłowy wybór, wpisz t lub n");
             }
         }
-    }
-
-    private boolean isMaxExclusions (Set<String> exclusions, int max) {
-        if (exclusions.size() >= max) {
-            printer.print(" -> Osiągnięto mksymalną liczbe wykluczeń <-");
-            return true;
-        }
-        return false;
     }
 
     public void printAllClients() {
@@ -113,7 +104,7 @@ public class ClientController {
             return;
         }
         Client c = client.get();
-        printDataToChange();
+        menu.printDataToChange();
         while (true) {
             int toChange = reader.readPositiveNumber("Które dane chcesz zmienić");
             if (applyChange(toChange, c)) return;
@@ -169,24 +160,25 @@ public class ClientController {
             switch (choice) {
                 case 1 -> changeIngredient(client, ingredient);
                 case 2 -> deleteIngredient(client, ingredient);
-                case 3 -> {}
+                case 3 -> {
+                }
                 case 4 -> addIngredient(client);
                 default -> printer.print("Niepoprawny wybór");
             }
         }
     }
 
-
-
     private void deleteIngredient(Client client, String ingredient) {
-        cs.deleteExclusion(client.getId(), ingredient);
-        client.getExclusions().remove(ingredient);
+        if (cs.isDeleteExclusion(client, ingredient)) {
+            printer.print("Usunięto wykluczenie: " + ingredient);
+        } else {
+            printer.print("Nie znaleziono takiego wykluczenia");
+        }
     }
 
     private void addIngredient(Client client) {
         String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
-        if (client.getExclusions().add(newIngredient)) {
-            cs.addExclusion(client.getId(), newIngredient);
+        if (cs.addIngredient(client, newIngredient)) {
             printer.print("Dodano wykluczenie: " + newIngredient);
         } else {
             printer.print("To wykluczenie już istnieje");
@@ -195,21 +187,11 @@ public class ClientController {
 
     private void changeIngredient(Client client, String ingredient) {
         String newIngredient = reader.readText("Wpisz nowe wykluczenie").trim();
-        cs.deleteExclusion(client.getId(), ingredient);
-        cs.addExclusion(client.getId(), newIngredient);
-        client.getExclusions().remove(ingredient);
-        client.getExclusions().add(newIngredient);
-        printer.print("Zmieniono wykluczenie");
+        if (cs.changeExclusion(client, ingredient, newIngredient)) {
+            printer.print("Zmieniono wykluczenie");
+        } else {
+            printer.print("Nie udało się zmienić wykluczenia");
+        }
     }
-
-    private void printDataToChange() {
-        printer.print("1 - Imię i Nazwisko");
-        printer.print("2 - Adres");
-        printer.print("3 - Miejscowość");
-        printer.print("4 - Nr telefonu");
-        printer.print("5 - Wykluczenia");
-        printer.print("6 - Wróć do poprzedniego menu");
-    }
-
 
 }

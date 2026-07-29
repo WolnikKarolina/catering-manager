@@ -5,9 +5,11 @@ import pl.karolina.cateringmanager.repository.ClientRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class ClientService {
     private final ClientRepository cr;
+    private static final int MAX_INGREDIENTS = 4;
 
     public ClientService(ClientRepository cr) {
         this.cr = cr;
@@ -21,7 +23,7 @@ public class ClientService {
         }
     }
 
-    public List<Client> getAllClients(){
+    public List<Client> getAllClients() {
         return cr.findAll();
     }
 
@@ -46,4 +48,32 @@ public class ClientService {
         cr.update(client);
     }
 
+    public boolean canAddExclusions(Set<String> exclusions) {
+        return exclusions.size() >= MAX_INGREDIENTS;
+    }
+
+    public boolean addIngredient(Client client, String ingredient) {
+        if (client.getExclusions().add(ingredient)) {
+            addExclusion(client.getId(), ingredient);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean changeExclusion(Client client, String ingredient, String newIngredient) {
+        if (client.getExclusions().remove(ingredient) && client.getExclusions().add(newIngredient)) {
+            deleteExclusion(client.getId(), ingredient);
+            addExclusion(client.getId(), newIngredient);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDeleteExclusion(Client client, String ingredient) {
+        if (client.getExclusions().remove(ingredient)) {
+            deleteExclusion(client.getId(), ingredient);
+            return true;
+        }
+        return false;
+    }
 }
