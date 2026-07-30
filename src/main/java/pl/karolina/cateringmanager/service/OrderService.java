@@ -77,4 +77,15 @@ public class OrderService {
         }
     }
 
+    public double sumOrdersFromClient (int clientId) {
+       return (double)findOrderByClientId(clientId).stream()
+               .mapToDouble(Order::getPrice)
+               .sum();
+    }
+
+    public void markAsPaid (Order order) {
+        order.setPaid(true);
+        updateOrder(order);
+    }
+
 }
