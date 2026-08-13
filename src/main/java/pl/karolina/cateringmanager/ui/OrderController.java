@@ -67,24 +67,21 @@ public class OrderController {
     }
 
     private boolean processOrderChoice(Client client, OrderData orderData) {
-        List<LocalDate> dates;
-        while (true) {
-            switch (menu.getProcessOrderChoice()) {
-                case 1 -> dates = orderPerDay();
-                case 2 -> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
-                case 3 -> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
-                case 4 -> dates = ordersFromRange(day -> true);
-                case 5 -> {
-                    return true;
-                }
-                default -> {
-                    printer.print("Wybrano niepoprawną liczbę, wybierz 1 - 5");
-                    continue;
-                }
+        List<LocalDate> dates = List.of();
+        switch (menu.getProcessOrderChoice()) {
+            case 1 -> dates = orderPerDay();
+            case 2 -> dates = ordersFromRange(day -> day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY);
+            case 3 -> dates = ordersFromRange(day -> day != DayOfWeek.SUNDAY);
+            case 4 -> dates = ordersFromRange(day -> true);
+            case 5 -> {
+                return true;
             }
-            addDates(dates, client, orderData);
-            return false;
         }
+        if (dates.isEmpty()){
+            throw new IllegalStateException("Lista dat jest pusta");
+        }
+        addDates(dates, client, orderData);
+        return false;
     }
 
     private Optional<OrderData> getOrderData() {
