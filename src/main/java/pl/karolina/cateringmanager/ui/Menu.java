@@ -16,31 +16,39 @@ public class Menu {
         printer.print("3 - Zamówienie z sobotami");
         printer.print("4 - Zamówienie razem z weekedami");
         printer.print("5 - Wróć do poprzedniego menu");
-        int choice = reader.readPositiveNumber( "Wybierz opcję zamówienia:");
-        return choice;
+        return readValidChoice("Wybierz opcję zamówienia:", 1, 5);
+    }
+
+    private int readValidChoice(String prompt, int min, int max) {
+        while (true) {
+            int choice = reader.readPositiveNumber(prompt);
+            if (choice >= min && choice <= max ) {
+                return choice;
+            } else {
+                printer.print("Niepoprawny wybór, spróbuj ponownie");
+            }
+        }
     }
 
     public int getOptionsToEditChoice() {
         printer.print("1 - Kalorie");
         printer.print("2 - Typ diety");
         printer.print("3 - Rabat");
-        int choice = reader.readPositiveNumber("Co chcesz edytować?");
-        return choice;
+        return readValidChoice("Co chcesz edytować?", 1, 3);
     }
 
-    public int getIngredientChoice() {
+    public int getIngredientActionChoice() {
         printer.print("1 - Zmień");
         printer.print("2 - Usuń");
         printer.print("3 - Zostaw");
         printer.print("4 - Dodaj nowe");
-        int choice = reader.readPositiveNumber( "Wybierz opcję");
-        return choice;
+        return readValidChoice("Wybierz opcję", 1, 4);
     }
 
     public int getEditOrderChoice() {
         printer.print("1 - Edytuj pojedynczy dzień");
         printer.print("2 - Edytuj zamówienia w przedziale czasowym");
-        return reader.readPositiveNumber("Wybirz opcję");
+        return readValidChoice("Wybierz opcję", 1, 2);
     }
 
     public void printDataToChange() {
