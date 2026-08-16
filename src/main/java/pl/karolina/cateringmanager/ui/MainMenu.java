@@ -14,13 +14,15 @@ public class MainMenu {
     private final ClientController clientctrl;
     private final PriceController pricectrl;
     private final OrderController orderctrl;
+    private final PaymentController paymenctrl;
 
-    public MainMenu(DataReader reader, Printer printer, ClientController clientctrl, PriceController pricectrl, OrderController orderctrl) {
+    public MainMenu(DataReader reader, Printer printer, ClientController clientctrl, PriceController pricectrl, OrderController orderctrl, PaymentController paymenctrl) {
         this.reader = reader;
         this.printer = printer;
         this.clientctrl = clientctrl;
         this.pricectrl = pricectrl;
         this.orderctrl = orderctrl;
+        this.paymenctrl = paymenctrl;
     }
 
     public void run() {
@@ -49,6 +51,22 @@ public class MainMenu {
     }
 
     private void paymentsMenu() {
+        while (true) {
+            printer.print("1 - Dodaj płatność");
+            printer.print("2 - Wyświetl płatności klienta");
+            printer.print("3 - Edytuj/Usuń płatności klienta");
+            int choice = reader.readPositiveNumber("Wybierz opcję");
+            try {
+                switch (choice) {
+                    case 1 -> paymenctrl.addPayment();
+                    case 2 -> {}
+                    case 3 -> {}
+                    default -> printer.print("Wybrałeś niepoprawną opcję");
+                }
+            } catch (RuntimeException e) {
+                printer.print(e.getMessage());
+            }
+        }
     }
 
     private void dailyMenu() {
