@@ -156,12 +156,11 @@ public class ClientController {
         Set<String> exclusionsCopy = new HashSet<>(client.getExclusions());
         for (String ingredient : exclusionsCopy) {
             printer.print(ingredient);
-            int choice = menu.getIngredientChoice();
+            int choice = menu.getIngredientActionChoice();
             switch (choice) {
                 case 1 -> changeIngredient(client, ingredient);
                 case 2 -> deleteIngredient(client, ingredient);
-                case 3 -> {
-                }
+                case 3 -> {}
                 case 4 -> addIngredient(client);
                 default -> printer.print("Niepoprawny wybór");
             }
