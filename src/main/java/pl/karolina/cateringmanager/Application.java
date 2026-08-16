@@ -2,9 +2,11 @@ package pl.karolina.cateringmanager;
 
 import pl.karolina.cateringmanager.repository.ClientRepository;
 import pl.karolina.cateringmanager.repository.OrderRepository;
+import pl.karolina.cateringmanager.repository.PaymentRepository;
 import pl.karolina.cateringmanager.repository.PriceRepository;
 import pl.karolina.cateringmanager.service.ClientService;
 import pl.karolina.cateringmanager.service.OrderService;
+import pl.karolina.cateringmanager.service.PaymentService;
 import pl.karolina.cateringmanager.service.PriceService;
 import pl.karolina.cateringmanager.ui.*;
 
@@ -15,24 +17,28 @@ public class Application {
         DataReader reader = new DataReader(printer);
         Menu menu = new Menu(printer, reader);
 
-        ClientRepository cr = new ClientRepository();
-        OrderRepository or = new OrderRepository();
-        PriceRepository pr = new PriceRepository();
+        ClientRepository clientRepository = new ClientRepository();
+        OrderRepository orderRepository = new OrderRepository();
+        PriceRepository priceRepository = new PriceRepository();
+        PaymentRepository paymentRepository = new PaymentRepository();
 
-        ClientService cs = new ClientService(cr);
-        PriceService ps = new PriceService(pr);
-        OrderService os = new OrderService(or, pr);
+        ClientService clientService = new ClientService(clientRepository);
+        PriceService priceService = new PriceService(priceRepository);
+        OrderService orderService = new OrderService(orderRepository, priceRepository);
+        PaymentService paymentService = new PaymentService(paymentRepository);
 
         ClientController clientctrl =
-                new ClientController(cs, reader, printer, menu);
+                new ClientController(clientService, reader, printer, menu);
 
         PriceController pricectrl =
-                new PriceController(ps, reader, printer);
+                new PriceController(priceService, reader, printer);
 
         OrderController orderctrl =
-                new OrderController(os, printer, reader, clientctrl, ps, menu);
+                new OrderController(orderService, printer, reader, clientctrl, priceService, menu);
 
-        MainMenu mainMenu = new MainMenu(reader, printer, clientctrl, pricectrl, orderctrl );
+        PaymentController paymentctrl = new PaymentController(paymentService, printer, reader, menu, clientctrl);
+
+        MainMenu mainMenu = new MainMenu(reader, printer, clientctrl, pricectrl, orderctrl, paymentctrl );
 
         mainMenu.run();
     }
