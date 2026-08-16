@@ -9,21 +9,16 @@ public class Payment {
     private int clientId;
     private LocalDate paymentDate;
     private double amount;
+    private PaymentMethod paymentMethod;
 
     public Payment() {
     }
 
-    public Payment(int id, int clientId, LocalDate paymentDate, double amount) {
-        this.id = id;
-        this.clientId = clientId;
-        this.paymentDate = paymentDate;
+    public Payment( double amount, LocalDate paymentDate, int clientId, PaymentMethod paymentMethod) {
         this.amount = amount;
-    }
-
-    public Payment(int clientId, LocalDate paymentDate, double amount) {
-        this.clientId = clientId;
         this.paymentDate = paymentDate;
-        this.amount = amount;
+        this.clientId = clientId;
+        this.paymentMethod = paymentMethod;
     }
 
     public int getId() {
@@ -56,6 +51,14 @@ public class Payment {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     @Override

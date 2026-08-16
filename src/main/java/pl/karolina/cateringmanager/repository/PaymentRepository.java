@@ -3,6 +3,7 @@ package pl.karolina.cateringmanager.repository;
 
 import pl.karolina.cateringmanager.db.DatabaseConnection;
 import pl.karolina.cateringmanager.model.Payment;
+import pl.karolina.cateringmanager.model.PaymentMethod;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,10 +15,11 @@ public class PaymentRepository {
     public void save(Payment payment) {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO payments (client_id, date, amount) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO payments (client_id, date, amount, payment_method) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, payment.getClientId());
             stmt.setDate(2, Date.valueOf(payment.getPaymentDate()));
             stmt.setDouble(3, payment.getAmount());
+            stmt.setString(4, payment.getPaymentMethod().name());
             stmt.executeUpdate();
 
             ResultSet keys = stmt.getGeneratedKeys();
@@ -52,6 +54,7 @@ public class PaymentRepository {
         payment.setClientId(rs.getInt("client_id"));
         payment.setPaymentDate(rs.getDate("date").toLocalDate());
         payment.setAmount(rs.getDouble("amount"));
+        payment.setPaymentMethod(PaymentMethod.valueOf(rs.getString("payment_method")));
         return payment;
     }
 
