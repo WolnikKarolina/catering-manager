@@ -78,7 +78,7 @@ public class ClientController {
         printer.printAll(searchClientWithRetry());
     }
 
-    private List<Client> searchClientWithRetry() {
+    public List<Client> searchClientWithRetry() {
         while (true) {
             String query = reader.readText("Wpisz dane klienta do wyszukania").trim();
             List<Client> clients = cs.searchClients(query);
