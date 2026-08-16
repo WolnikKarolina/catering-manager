@@ -61,15 +61,18 @@ public class MainMenu {
             printer.print("2 - Zmień ceny");
             printer.print("3 - Powrót do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
-            switch (choice) {
-                case 1 -> pricectrl.printAllPrices();
-                case 2 -> pricectrl.updatePrices();
-                case 3 -> {
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> pricectrl.printAllPrices();
+                    case 2 -> pricectrl.updatePrices();
+                    case 3 -> {
+                        return;
+                    }
+                    default -> printer.print("Niepoprawna opcja, spróbuj ponownie");
                 }
-                default -> printer.print("Niepoprawna opcja, spróbuj ponownie");
+            } catch (RuntimeException e) {
+                printer.print(e.getMessage());
             }
-
         }
     }
 
@@ -81,15 +84,19 @@ public class MainMenu {
             printer.print("4 - Usuń zamówienie");
             printer.print("5 - Wyjście do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
-            switch (choice) {
-                case 1 -> orderctrl.addOrder();
-                case 2 -> printOrders();
-                case 3 -> orderctrl.editOrders();
-                case 4 -> orderctrl.deleteOrder();
-                case 5 -> {
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> orderctrl.addOrder();
+                    case 2 -> printOrders();
+                    case 3 -> orderctrl.editOrders();
+                    case 4 -> orderctrl.deleteOrder();
+                    case 5 -> {
+                        return;
+                    }
+                    default -> printer.print("Niepoprawna opcja spróbuj ponownie");
                 }
-                default -> printer.print("Niepoprawna opcja spróbuj ponownie");
+            }catch (RuntimeException e) {
+                printer.print(e.getMessage());
             }
         }
     }
@@ -107,15 +114,19 @@ public class MainMenu {
             printer.print("4 - Edytuj");
             printer.print("5 - Wyjście do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
-            switch (choice) {
-                case 1 -> clientctrl.printAllClients();
-                case 2 -> clientctrl.printClient();
-                case 3 -> clientctrl.addClient();
-                case 4 -> clientctrl.updateClientData();
-                case 5 -> {
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> clientctrl.printAllClients();
+                    case 2 -> clientctrl.printClient();
+                    case 3 -> clientctrl.addClient();
+                    case 4 -> clientctrl.updateClientData();
+                    case 5 -> {
+                        return;
+                    }
+                    default -> printer.print("Niepoprawna opcja spróbuj ponownie");
                 }
-                default -> printer.print("Niepoprawna opcja spróbuj ponownie");
+            } catch (RuntimeException e) {
+                printer.print(e.getMessage());
             }
         }
     }
