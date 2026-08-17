@@ -7,6 +7,7 @@ import pl.karolina.cateringmanager.repository.OrderRepository;
 import pl.karolina.cateringmanager.repository.PriceRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +95,25 @@ public class OrderService {
                 .filter(o -> !o.isPaid())
                 .sorted(Comparator.comparing(Order::getDate))
                 .toList();
+    }
+
+    public List<Order> settleOldestFirst(Client client, double amount) {
+        List<Order> paidOrders = new ArrayList<>();
+        List<Order> unpaidOrders = getUnpaidOrdersSortedByDate(client.getId());
+        double remaining = amount;
+
+        for (Order order : unpaidOrders) {
+            if (remaining >= order.getPrice()) {
+                order.setPaid(true);
+                remaining = remaining - order.getPrice();
+                or.updatePaidStatus(order);
+                paidOrders.add(order);
+            }else {
+                break;
+            }
+        }
+        client.setCredit(client.getCredit() + remaining);
+        return paidOrders;
     }
 
 }
