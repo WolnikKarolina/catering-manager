@@ -36,7 +36,7 @@ public class Application {
         OrderController orderctrl =
                 new OrderController(orderService, printer, reader, clientctrl, priceService, menu);
 
-        PaymentController paymentctrl = new PaymentController(paymentService, printer, reader, menu, clientctrl);
+        PaymentController paymentctrl = new PaymentController(paymentService, printer, reader, menu, clientctrl, orderService);
 
         MainMenu mainMenu = new MainMenu(reader, printer, clientctrl, pricectrl, orderctrl, paymentctrl );
 
