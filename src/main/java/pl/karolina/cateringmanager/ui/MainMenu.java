@@ -55,12 +55,16 @@ public class MainMenu {
             printer.print("1 - Dodaj płatność");
             printer.print("2 - Wyświetl płatności klienta");
             printer.print("3 - Edytuj/Usuń płatności klienta");
+            printer.print("4 - Wyjście do poprzedniego menu");
             int choice = reader.readPositiveNumber("Wybierz opcję");
             try {
                 switch (choice) {
                     case 1 -> paymenctrl.addPayment();
                     case 2 -> {}
                     case 3 -> {}
+                    case 4 -> {
+                        return;
+                    }
                     default -> printer.print("Wybrałeś niepoprawną opcję");
                 }
             } catch (RuntimeException e) {
