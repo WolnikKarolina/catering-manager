@@ -88,4 +88,12 @@ public class OrderService {
         updateOrder(order);
     }
 
+    public List<Order> getUnpaidOrdersSortedByDate (int clientId) {
+        List<Order> ordersByClientId = or.findOrdersByClientId(clientId);
+        return ordersByClientId.stream()
+                .filter(o -> !o.isPaid())
+                .sorted(Comparator.comparing(Order::getDate))
+                .toList();
+    }
+
 }
