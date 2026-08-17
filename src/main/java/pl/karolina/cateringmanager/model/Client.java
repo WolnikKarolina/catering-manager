@@ -99,7 +99,7 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Klient nr: " + id +"; " + name + "; " + address + "; " + city + "; tel: " + phone + "; wykluczenia: " + exclusions;
+        return "Klient nr: " + id +"; " + name + "; " + address + "; " + city + "; tel: " + phone + "; wykluczenia: " + exclusions + " saldo: " + credit + "zł";
     }
 
     @Override
