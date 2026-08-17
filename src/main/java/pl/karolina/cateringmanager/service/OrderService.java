@@ -3,6 +3,7 @@ package pl.karolina.cateringmanager.service;
 import pl.karolina.cateringmanager.model.Client;
 import pl.karolina.cateringmanager.model.Order;
 import pl.karolina.cateringmanager.model.OrderData;
+import pl.karolina.cateringmanager.repository.ClientRepository;
 import pl.karolina.cateringmanager.repository.OrderRepository;
 import pl.karolina.cateringmanager.repository.PriceRepository;
 
@@ -16,10 +17,12 @@ public class OrderService {
 
     private final OrderRepository or;
     private final PriceRepository pr;
+    private final ClientRepository cr;
 
-    public OrderService(OrderRepository or, PriceRepository pr) {
+    public OrderService(OrderRepository or, PriceRepository pr, ClientRepository cr) {
         this.or = or;
         this.pr = pr;
+        this.cr = cr;
     }
 
     public void addOrder(Order order) {
@@ -103,6 +106,7 @@ public class OrderService {
         double remaining = amount;
         remaining = makeOrdersPaid(unpaidOrders, remaining, paidOrders);
         client.setCredit(client.getCredit() + remaining);
+        cr.updateCredit(client);
         return paidOrders;
     }
 
@@ -132,6 +136,7 @@ public class OrderService {
         }
         remaining = makeOrdersPaid(ordersByDate, remaining, paidOrders);
         client.setCredit(client.getCredit() + remaining);
+        cr.updateCredit(client);
         return paidOrders;
     }
 }

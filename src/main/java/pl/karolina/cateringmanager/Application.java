@@ -24,7 +24,7 @@ public class Application {
 
         ClientService clientService = new ClientService(clientRepository);
         PriceService priceService = new PriceService(priceRepository);
-        OrderService orderService = new OrderService(orderRepository, priceRepository);
+        OrderService orderService = new OrderService(orderRepository, priceRepository, clientRepository);
         PaymentService paymentService = new PaymentService(paymentRepository);
 
         ClientController clientctrl =
